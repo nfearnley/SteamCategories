@@ -1,0 +1,44 @@
+About KeyValues Text File Format:
+3 control characters:
+ {
+ }
+ "
+
+Names and values may be quoted or not.
+Unquoted tokens:
+ End with:
+  white space
+  {
+  }
+  "
+ May not escape characters
+ May not include:
+  white space
+  {
+  }
+  "
+Quoted tokens:
+ Escape characters:
+  \n
+  \t
+  \\
+  \"
+ May include:
+  whitespace
+  {
+  }
+  escaped characters
+
+After a keyname
+ { means list of subkeys
+ closed by }
+
+Whitespace
+ space
+ return
+ newline
+ tabulator
+
+Used for macro purposes
+ #
+ don't use it as first character in key names
