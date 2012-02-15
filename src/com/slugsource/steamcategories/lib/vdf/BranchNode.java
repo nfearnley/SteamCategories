@@ -5,7 +5,6 @@
 package com.slugsource.steamcategories.lib.vdf;
 
 import com.slugsource.steamcategories.lib.NodeNameNotUniqueException;
-import com.sun.org.apache.xerces.internal.dom.ChildNode;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;

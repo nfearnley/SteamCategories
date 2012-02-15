@@ -7,6 +7,8 @@ package com.slugsource.steamcategories.lib.vdf;
 import com.slugsource.steamcategories.lib.NodeNameNotUniqueException;
 import java.io.*;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -75,21 +77,65 @@ public class Node implements NodeInterface
         return hash;
     }
     
-    public static Node readFromFile(File file) throws FileNotFoundException
+    public static Node readFromFile(File file)
     {
-        FileInputStream fis = new FileInputStream(file);
-        InputStreamReader isr = new InputStreamReader(fis);
-        Reader r = new BufferedReader(isr);
+        FileInputStream fis = null;
+        Node result = null;
+        try
+        {   
+            fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            Reader r = new BufferedReader(isr);
+            result = Node.parse(r);
+        } catch (FileNotFoundException e)
+        {
+            return null;
+        }
+        finally
+        {
+            if (fis != null)
+            {
+                try
+                {
+                    fis.close();
+                } catch (IOException ex)
+                {
 
-        return Node.parse(r);
+                }
+            }
+        }
+        return result;
     }
     
-    public static void writeToFile(File file, Node node) throws IOException
+    public static void writeToFile(File file, Node node)
     {
-        FileOutputStream fos = new FileOutputStream(file);
-        OutputStreamWriter osw = new OutputStreamWriter(fos);
-        BufferedWriter w = new BufferedWriter(osw);
-        w.write(node.toString());
+        FileOutputStream fos = null;
+        OutputStreamWriter osw;
+        BufferedWriter w;
+        
+        try
+        {
+            fos = new FileOutputStream(file);
+            osw = new OutputStreamWriter(fos);
+            w = new BufferedWriter(osw);
+            w.write(node.toString());
+        } catch (IOException e)
+        {
+            
+        }
+        finally
+        {
+            if (fos != null)
+            {
+                try
+                {
+                    fos.close();
+                } catch (IOException ex)
+                {
+
+                }
+            }
+        }
     }
     
     @Override
