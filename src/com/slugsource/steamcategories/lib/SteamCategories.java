@@ -28,7 +28,10 @@ public class SteamCategories
             return;
         }
         
-        System.out.println(rootNode.getName());
-        rootNode.getNode("UserLocalConfigStore");
+        Node node = rootNode.getNode("Software");
+        node = node.getNode("Valve");
+        node = node.getNode("Steam");
+        node = node.getNode("apps");
+        
     }
 }
