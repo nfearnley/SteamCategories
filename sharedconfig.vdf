@@ -1,0 +1,56 @@
+"UserLocalConfigStore"
+{
+	"Software"
+	{
+		"Valve"
+		{
+			"Steam"
+			{
+				"SSAVersion"		"1"
+				"apps"
+				{
+					"320"
+					{
+						"LastPlayed"		"1327030736"
+					}
+					"17710"
+					{
+						"LastPlayed"		"1329199209"
+					}
+					"440"
+					{
+						"LastPlayed"		"1327278130"
+					}
+					"80350"
+					{
+						"LastPlayed"		"1327614037"
+						"tags"
+						{
+							"0"		"Adventure"
+						}
+					}
+					"400"
+					{
+						"LastPlayed"		"1328586652"
+					}
+					"63000"
+					{
+						"cloudenabled"		"1"
+					}
+					"72850"
+					{
+						"LastPlayed"		"1329191074"
+					}
+					"1250"
+					{
+						"LastPlayed"		"1329247545"
+					}
+				}
+				"DesktopShortcutCheck"		"0"
+				"StartMenuShortcutCheck"		"0"
+				"AutoLaunchGameListCheck"		"0"
+				"SteamDefaultDialog"		"#app_store"
+			}
+		}
+	}
+}
