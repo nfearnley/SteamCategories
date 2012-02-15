@@ -40,7 +40,7 @@ public class Node implements NodeInterface
         Node node = this;
         for (String nodeName : path)
         {
-            Node childNode = this.getNode(nodeName);
+            Node childNode = node.getNode(nodeName);
             if (childNode == null)
             {
                 childNode = new BranchNode(nodeName);
