@@ -42,3 +42,7 @@ Whitespace
 Used for macro purposes
  #
  don't use it as first character in key names
+
+Comments
+ // Starts comments
+ End of line ends comments
