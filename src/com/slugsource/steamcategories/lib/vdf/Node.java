@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author Nathan Fearnley
  */
-public class Node
+public class Node implements NodeInterface
 {
     private String name;
 
@@ -21,9 +21,28 @@ public class Node
         this.name = name;
     }
 
+    @Override
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public String getValue()
+    {
+        return null;
+    }
+
+    @Override
+    public void setValue(String value)
+    {
+        return;
+    }
+
+    @Override
+    public Node getNode(String name)
+    {
+        return null;
     }
 
     @Override
@@ -67,6 +86,7 @@ public class Node
         w.write(node.toString());
     }
     
+    @Override
     public void writeToFile(File file) throws IOException
     {
         writeToFile(file, this);
@@ -129,6 +149,7 @@ public class Node
         return parser;
     }
     
+    @Override
     public String toString(int level)
     {
         return "";
