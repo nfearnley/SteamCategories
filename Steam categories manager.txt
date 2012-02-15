@@ -1,0 +1,15 @@
+Get SteamID
+    from %steam%\config\config.vdf
+    InstallConfigStore.Software.Valve.Steam.Accounts.[Username].SteamID
+
+Get UserdataID
+    to %steam%\userdata\[UserdataID]\config\localconfig.vdf
+    UserLocalConfigStore.friends.[UserdataID].name
+    
+Get list of steam games owned
+    from http://steamcommunity.com/id/[SteamID]/games?xml=1
+    gamesList.games.game.appID
+	gamesList.games.game.name
+
+Save categories
+	to %steam%\userdata\[UserdataID]\7\remote\sharedconfig.vdf
