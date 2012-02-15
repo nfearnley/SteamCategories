@@ -46,12 +46,18 @@ public class Node implements NodeInterface
     }
 
     @Override
+    public void addNode(Node node) throws NodeNameNotUniqueException
+    {
+        return;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof Node)) {
             return false;
         }
         final Node other = (Node) obj;

@@ -4,6 +4,7 @@
  */
 package com.slugsource.steamcategories.lib.vdf;
 
+import com.slugsource.steamcategories.lib.NodeNameNotUniqueException;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,6 +22,8 @@ public interface NodeInterface
     
     Node getNode(String name);
 
+    void addNode(Node node) throws NodeNameNotUniqueException;
+    
     String toString(int level);
             
     void writeToFile(File file) throws IOException;
