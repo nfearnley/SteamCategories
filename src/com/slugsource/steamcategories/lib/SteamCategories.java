@@ -26,34 +26,8 @@ public class SteamCategories
 
         rootNode = Node.readFromFile(file);
         
-        try
-        {
-            Node apps = rootNode.getNode("Software").getNode("Valve").getNode("Steam").getNode("apps");
-            String skyrimId = "72850";
-            Node skyrim = apps.getNode("72850");
-            if (skyrim == null)
-            {
-                skyrim = new BranchNode("72850");
-                skyrim.addNode(new ValueNode("tags", "FPS RPG"));
-                apps.addNode(skyrim);
-            }
-            else
-            {
-                Node tags = skyrim.getNode("tags");
-                if (tags == null)
-                {
-                    skyrim.addNode(new ValueNode("tags", "FPS RPG"));
-                }
-                else
-                {
-
-                }
-            }
-        } catch (NodeNameNotUniqueException e)
-        {
-            System.out.println(e.getMessage());
-            return;
-        }
+        String[] path = {"Software", "Valve", "Steam", "apps", "72850", "tags"};
+        rootNode.setValue(path, "0", "FPS RPG");
             
         Node.writeToFile(new File("F:\\Programming\\SteamCategories\\testoutput.vdf"), rootNode);
     }

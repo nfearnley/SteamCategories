@@ -35,6 +35,42 @@ public class Node implements NodeInterface
         return null;
     }
 
+    public void setValue(String[] path, String name, String value)
+    {
+        Node node = this;
+        for (String nodeName : path)
+        {
+            Node childNode = this.getNode(nodeName);
+            if (childNode == null)
+            {
+                childNode = new BranchNode(nodeName);
+                try
+                {
+                    node.addNode(childNode);
+                } catch (NodeNameNotUniqueException e)
+                {
+                }
+            }
+            node = childNode;
+        }
+        
+        Node valNode = node.getNode(name);
+        if (valNode == null)
+        {
+            valNode = new ValueNode(name, value);
+            try
+            {
+                node.addNode(valNode);
+            } catch (NodeNameNotUniqueException e)
+            {
+            }
+        }
+        else
+        {
+            valNode.setValue(value);
+        }
+    }
+    
     @Override
     public void setValue(String value)
     {
@@ -119,6 +155,7 @@ public class Node implements NodeInterface
             osw = new OutputStreamWriter(fos);
             w = new BufferedWriter(osw);
             w.write(node.toString());
+            w.flush();
         } catch (IOException e)
         {
             
