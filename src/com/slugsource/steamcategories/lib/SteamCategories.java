@@ -4,13 +4,8 @@
  */
 package com.slugsource.steamcategories.lib;
 
-import com.slugsource.steamcategories.lib.vdf.BranchNode;
 import com.slugsource.steamcategories.lib.vdf.Node;
-import com.slugsource.steamcategories.lib.vdf.ValueNode;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import javax.naming.NameNotFoundException;
 
 /**
  *

@@ -4,35 +4,43 @@
  */
 package com.slugsource.steamcategories.lib.vdf;
 
-import com.slugsource.steamcategories.lib.NodeNameNotUniqueException;
 import java.io.*;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author Nathan Fearnley
  */
-public class Node implements NodeInterface
+public class Node
 {
     private String name;
+    private String value = null;
+    private LinkedList<Node> children = null;
 
     public Node(String name)
     {
         this.name = name;
     }
-
-    @Override
+    
+    public Node(String name, String value)
+    {
+        this(name);
+        this.value = value;
+    }
+    
     public String getName()
     {
-        return name;
+        return this.name;
     }
-
-    @Override
+    
     public String getValue()
     {
-        return null;
+        return this.value;
     }
 
     public void setValue(String[] path, String name, String value)
@@ -40,16 +48,11 @@ public class Node implements NodeInterface
         Node node = this;
         for (String nodeName : path)
         {
-            Node childNode = node.getNode(nodeName);
+           Node childNode = node.getNode(nodeName);
             if (childNode == null)
             {
-                childNode = new BranchNode(nodeName);
-                try
-                {
-                    node.addNode(childNode);
-                } catch (NodeNameNotUniqueException e)
-                {
-                }
+                childNode = new Node(nodeName);
+                node.addNode(childNode);
             }
             node = childNode;
         }
@@ -57,13 +60,8 @@ public class Node implements NodeInterface
         Node valNode = node.getNode(name);
         if (valNode == null)
         {
-            valNode = new ValueNode(name, value);
-            try
-            {
-                node.addNode(valNode);
-            } catch (NodeNameNotUniqueException e)
-            {
-            }
+            valNode = new Node(name, value);
+            node.addNode(valNode);
         }
         else
         {
@@ -71,22 +69,35 @@ public class Node implements NodeInterface
         }
     }
     
-    @Override
     public void setValue(String value)
     {
-        return;
+        this.value = value;
+        children = null;
     }
 
-    @Override
     public Node getNode(String name)
     {
-        return null;
+        if (children == null)
+            return null;
+        
+        int index = children.indexOf(new Node(name));
+
+        Node result = null;
+        if (index != -1)
+        {
+            result = children.get(index);
+        }
+        return result;
     }
 
-    @Override
-    public void addNode(Node node) throws NodeNameNotUniqueException
+    public void addNode(Node node)
     {
-        return;
+        if (children == null)
+        {
+            children = new LinkedList<Node>();
+            value = null;
+        }
+        children.add(node);
     }
 
     @Override
@@ -175,7 +186,6 @@ public class Node implements NodeInterface
         }
     }
     
-    @Override
     public void writeToFile(File file) throws IOException
     {
         writeToFile(file, this);
@@ -200,11 +210,11 @@ public class Node implements NodeInterface
             if (parser.sval != null)
             {
                 String value = parser.sval;
-                node = new ValueNode(name, value);
+                node = new Node(name, value);
             }
             else if (parser.ttype == '{')
             {
-                BranchNode branchNode = new BranchNode(name);
+                Node branchNode = new Node(name);
                 while (parser.nextToken() != '}')
                 {
                     parser.pushBack();
@@ -215,7 +225,7 @@ public class Node implements NodeInterface
             
             return node;
         }
-        catch (NodeNameNotUniqueException | IOException e)
+        catch (IOException e)
         {
             return null;
         }
@@ -239,8 +249,35 @@ public class Node implements NodeInterface
     }
     
     @Override
+    public String toString()
+    {
+        return toString(0);
+    }
+    
     public String toString(int level)
     {
-        return "";
+        String output;
+        if (value != null)
+        {
+            String name = '"' + StringEscapeUtils.escapeJava(this.getName()) + '"';
+            String value = '"' + StringEscapeUtils.escapeJava(this.getValue()) + '"';
+            output = StringUtils.repeat('\t', level) + name + "\t\t" + value + '\n';
+        }
+        else
+        {
+            String name = '"' + StringEscapeUtils.escapeJava(getName()) + '"';
+
+            StringBuilder childrenOutput = new StringBuilder();
+            for (Node child : children)
+            {
+                childrenOutput.append(child.toString(level + 1));
+            }
+
+            output = StringUtils.repeat('\t', level) + name + '\n';
+            output += StringUtils.repeat('\t', level) + "{\n";
+            output += childrenOutput;
+            output += StringUtils.repeat('\t', level) + "}\n";
+        }
+        return output;
     }
 }
