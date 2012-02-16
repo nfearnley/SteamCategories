@@ -1,19 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.slugsource.steamcategories.lib.vdf;
 
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * A node object that can hold either a value, or child node objects
  * @author Nathan Fearnley
  */
 public class Node
@@ -22,33 +16,64 @@ public class Node
     private String value = null;
     private LinkedList<Node> children = null;
 
+    /**
+     * Constructor that sets the name of the node
+     * @param name  name of the node
+     */
     public Node(String name)
     {
         this.name = name;
     }
-    
+
+    /**
+     * Constructor that sets the name and value of the node
+     * @param name  name of the node
+     * @param value value of the node
+     */
     public Node(String name, String value)
     {
         this(name);
         this.value = value;
     }
-    
+
+    /**
+     * Get the name of the node
+     * @return  Name of the node
+     */
     public String getName()
     {
         return this.name;
     }
-    
+
+    /**
+     * Get the value of the node
+     * @return  Value of the node
+     */
     public String getValue()
     {
         return this.value;
     }
 
+    /**
+     * Set the value of a particular subnode
+     * Fails silently.
+     * @param path  array of node path that subnode is contained in
+     * @param name  name of subnode to set
+     * @param value value to set subnode to
+     */
     public void setValue(String[] path, String name, String value)
     {
+        // If first 
+        if ((path.length == 0 && name != this.name) || path[0] != this.name)
+        {
+            return;
+        }
+        
         Node node = this;
+        
         for (String nodeName : path)
         {
-           Node childNode = node.getNode(nodeName);
+            Node childNode = node.getNode(nodeName);
             if (childNode == null)
             {
                 childNode = new Node(nodeName);
@@ -56,30 +81,41 @@ public class Node
             }
             node = childNode;
         }
-        
+
         Node valNode = node.getNode(name);
         if (valNode == null)
         {
             valNode = new Node(name, value);
             node.addNode(valNode);
-        }
-        else
+        } else
         {
             valNode.setValue(value);
         }
     }
-    
+
+    /**
+     * Sets the value for this node.
+     * Will delete all children.
+     * @param value Value to set node to
+     */
     public void setValue(String value)
     {
         this.value = value;
         children = null;
     }
 
+    /**
+     * Lookup a child node by name.
+     * @param name  Name of child node.
+     * @return      Node if found, null if not found.
+     */
     public Node getNode(String name)
     {
         if (children == null)
+        {
             return null;
-        
+        }
+
         int index = children.indexOf(new Node(name));
 
         Node result = null;
@@ -90,6 +126,11 @@ public class Node
         return result;
     }
 
+    /**
+     * Add a child node to this node.
+     * Will delete node value.
+     * @param node  Child node to add
+     */
     public void addNode(Node node)
     {
         if (children == null)
@@ -99,23 +140,34 @@ public class Node
         }
         children.add(node);
     }
-
+    /**
+    * Compare two nodes to see if they are equal (have the same name).
+    * @param obj    Other node to compare to
+    * @return       Return true if they are equal (have the same name), or false if they are not.
+    */
     @Override
     public boolean equals(Object obj)
     {
-        if (obj == null) {
+        if (obj == null)
+        {
             return false;
         }
-        if (!(obj instanceof Node)) {
+        if (!(obj instanceof Node))
+        {
             return false;
         }
         final Node other = (Node) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (!Objects.equals(this.name, other.name))
+        {
             return false;
         }
         return true;
     }
 
+    /**
+     * Generate a hash to identify this node by name.
+     * @return  Hash code identifying this node
+     */
     @Override
     public int hashCode()
     {
@@ -123,13 +175,18 @@ public class Node
         hash = 97 * hash + Objects.hashCode(this.name);
         return hash;
     }
-    
+
+    /**
+     * Read a node from a configuration file.
+     * @param file  Configuration file to read from
+     * @return      Node that was read. Null if process failed.
+     */
     public static Node readFromFile(File file)
     {
         FileInputStream fis = null;
         Node result = null;
         try
-        {   
+        {
             fis = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(fis);
             Reader r = new BufferedReader(isr);
@@ -137,8 +194,7 @@ public class Node
         } catch (FileNotFoundException e)
         {
             return null;
-        }
-        finally
+        } finally
         {
             if (fis != null)
             {
@@ -147,19 +203,24 @@ public class Node
                     fis.close();
                 } catch (IOException ex)
                 {
-
                 }
             }
         }
         return result;
     }
-    
+
+    /**
+     * Write a node to a configuration file.
+     * Overwrites existing file. Will fail silently.
+     * @param file      File to write to.
+     * @param node      Node to save.
+     */
     public static void writeToFile(File file, Node node)
     {
         FileOutputStream fos = null;
         OutputStreamWriter osw;
         BufferedWriter w;
-        
+
         try
         {
             fos = new FileOutputStream(file);
@@ -169,9 +230,7 @@ public class Node
             w.flush();
         } catch (IOException e)
         {
-            
-        }
-        finally
+        } finally
         {
             if (fos != null)
             {
@@ -180,23 +239,37 @@ public class Node
                     fos.close();
                 } catch (IOException ex)
                 {
-
                 }
             }
         }
     }
-    
-    public void writeToFile(File file) throws IOException
+
+    /**
+     * Write this node to a configuration file.
+     * Overwrites existing file. Will fail silently.
+     * @param file  File to write to
+     */
+    public void writeToFile(File file)
     {
         writeToFile(file, this);
     }
-    
+
+    /**
+     * Read a configuration file from a reader and return the node.
+     * @param r     The reader to read from
+     * @return      The node read
+     */
     public static Node parse(Reader r)
     {
         StreamTokenizer parser = getParser(r);
         return parse(parser);
     }
-    
+
+    /**
+     * Read a configuration file using provided parser and return the node.
+     * @param parser    The parser used to read
+     * @return          The node read
+     */
     private static Node parse(StreamTokenizer parser)
     {
         Node node = null;
@@ -205,14 +278,13 @@ public class Node
             // Read top node name
             parser.nextToken();
             String name = parser.sval;
-            
+
             parser.nextToken();
             if (parser.sval != null)
             {
                 String value = parser.sval;
                 node = new Node(name, value);
-            }
-            else if (parser.ttype == '{')
+            } else if (parser.ttype == '{')
             {
                 Node branchNode = new Node(name);
                 while (parser.nextToken() != '}')
@@ -222,15 +294,19 @@ public class Node
                 }
                 node = branchNode;
             }
-            
+
             return node;
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             return null;
         }
     }
-    
+
+    /**
+     * Build a StreamTokenizer for parsing vdf files.
+     * @param r     A reader to read from.
+     * @return      The StreamTokenizer to parse the given reader file.
+     */
     private static StreamTokenizer getParser(Reader r)
     {
         StreamTokenizer parser = new StreamTokenizer(r);
@@ -247,23 +323,33 @@ public class Node
         parser.wordChars('\u00A0', '\u00FF');
         return parser;
     }
-    
+
+    /**
+     * Returns a string representing this node and subnodes.
+     * Formatted for output to file.
+     * @return          String formatted for output to file.
+     */
     @Override
     public String toString()
     {
         return toString(0);
     }
-    
+
+    /**
+     * Returns a string representing this node and subnodes.
+     * Formatted for output to file.
+     * @param level     The level of indentation to return
+     * @return          String formatted for output to file.
+     */
     public String toString(int level)
     {
-        String output;
+         String output;
         if (value != null)
         {
             String name = '"' + StringEscapeUtils.escapeJava(this.getName()) + '"';
             String value = '"' + StringEscapeUtils.escapeJava(this.getValue()) + '"';
             output = StringUtils.repeat('\t', level) + name + "\t\t" + value + '\n';
-        }
-        else
+        } else
         {
             String name = '"' + StringEscapeUtils.escapeJava(getName()) + '"';
 
