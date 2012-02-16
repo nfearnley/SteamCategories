@@ -62,13 +62,7 @@ public class Node
      * @param value value to set subnode to
      */
     public void setValue(String[] path, String name, String value)
-    {
-        // If first 
-        if ((path.length == 0 && name != this.name) || path[0] != this.name)
-        {
-            return;
-        }
-        
+    {        
         Node node = this;
         
         for (String nodeName : path)
