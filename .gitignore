@@ -1,2 +1,5 @@
 /dist/
 /lib/
+/build/
+/nbproject/private/
+/testoutput.vdf
