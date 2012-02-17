@@ -4,26 +4,32 @@
  */
 package com.slugsource.steamcategories.lib;
 
-import com.slugsource.steamcategories.lib.vdf.Node;
+import com.slugsource.steamcategories.gui.NotValidFileException;
+import com.slugsource.vdf.lib.Node;
 import java.io.File;
 
 /**
  *
- * @author Nathan Fearnley
+ * @author c260683
  */
 public class SteamCategories
 {
-    public static void main(String[] args)
-    {
-        // Load the file
-        Node rootNode;
-        File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
+    private Node rootNode;
+    private Node appsNode;
+    private final String[] appsPath = {"Software", "Valve", "Steam", "apps"};
+    private final String appsName = "apps";
+    private final String rootName = "UserLocalConfigStore";
+    
 
-        rootNode = Node.readFromFile(file);
-        
-        String[] path = {"Software", "Valve", "Steam", "apps", "72850", "tags"};
-        rootNode.setValue(path, "0", "FPS RPG");
-            
-        Node.writeToFile(new File("F:\\Programming\\SteamCategories\\testoutput.vdf"), rootNode);
+    public SteamCategories(File file) throws NotValidFileException
+    {
+        rootNode = rootNode.readFromFile(file);
+        if (rootNode.getName() != rootName)
+        {
+            throw new NotValidFileException("This is not a valid shared config file.");
+        }
+    
+        appsNode = rootNode.getNode(appsPath, appsName);
     }
+            
 }

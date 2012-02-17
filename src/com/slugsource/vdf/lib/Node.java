@@ -1,4 +1,4 @@
-package com.slugsource.steamcategories.lib.vdf;
+package com.slugsource.vdf.lib;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -8,17 +8,20 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * A node object that can hold either a value, or child node objects
+ *
  * @author Nathan Fearnley
  */
 public class Node
 {
+
     private String name;
     private String value = null;
     private LinkedList<Node> children = null;
 
     /**
      * Constructor that sets the name of the node
-     * @param name  name of the node
+     *
+     * @param name name of the node
      */
     public Node(String name)
     {
@@ -27,7 +30,8 @@ public class Node
 
     /**
      * Constructor that sets the name and value of the node
-     * @param name  name of the node
+     *
+     * @param name name of the node
      * @param value value of the node
      */
     public Node(String name, String value)
@@ -38,7 +42,8 @@ public class Node
 
     /**
      * Get the name of the node
-     * @return  Name of the node
+     *
+     * @return Name of the node
      */
     public String getName()
     {
@@ -47,7 +52,8 @@ public class Node
 
     /**
      * Get the value of the node
-     * @return  Value of the node
+     *
+     * @return Value of the node
      */
     public String getValue()
     {
@@ -56,15 +62,15 @@ public class Node
 
     /**
      * Set the value of a particular subnode
-     * Fails silently.
-     * @param path  array of node path that subnode is contained in
-     * @param name  name of subnode to set
-     * @param value value to set subnode to
+     *
+     * @param path Array of node path that subnode is contained in
+     * @param name Name of subnode to set
+     * @param value Value to set subnode to
      */
     public void setValue(String[] path, String name, String value)
-    {        
+    {
         Node node = this;
-        
+
         for (String nodeName : path)
         {
             Node childNode = node.getNode(nodeName);
@@ -88,8 +94,8 @@ public class Node
     }
 
     /**
-     * Sets the value for this node.
-     * Will delete all children.
+     * Sets the value for this node. Will delete all children.
+     *
      * @param value Value to set node to
      */
     public void setValue(String value)
@@ -99,9 +105,32 @@ public class Node
     }
 
     /**
+     * Get a particular subnode
+     * @param path  Array of node path that subnode is contained in
+     * @param name  Name of subnode to get
+     * @return  Subnode if found, null if not found.
+     */
+    public Node getNode(String[] path, String name)
+    {
+        Node node = this;
+
+        for (String nodeName : path)
+        {
+            Node childNode = node.getNode(nodeName);
+            if (childNode == null)
+            {
+                return null;
+            }
+            node = childNode;
+        }
+        return node;
+    }
+    
+    /**
      * Lookup a child node by name.
-     * @param name  Name of child node.
-     * @return      Node if found, null if not found.
+     *
+     * @param name Name of child node.
+     * @return Node if found, null if not found.
      */
     public Node getNode(String name)
     {
@@ -121,9 +150,10 @@ public class Node
     }
 
     /**
-     * Add a child node to this node.
-     * Will delete node value.
-     * @param node  Child node to add
+     * Add a child node to this node. Will delete node value. Will fail silently
+     * if node already exists.
+     *
+     * @param node Child node to add
      */
     public void addNode(Node node)
     {
@@ -132,13 +162,26 @@ public class Node
             children = new LinkedList<Node>();
             value = null;
         }
-        children.add(node);
+        if (!children.contains(node))
+        {
+            children.add(node);
+        }
     }
+
     /**
-    * Compare two nodes to see if they are equal (have the same name).
-    * @param obj    Other node to compare to
-    * @return       Return true if they are equal (have the same name), or false if they are not.
-    */
+     * Delete a child node from this node;
+     *
+     * @param node Child node to delete;
+     */
+    public void delNode(Node node)
+    {
+        if (children == null)
+        {
+            return;
+        }
+        children.remove(node);
+    }
+
     @Override
     public boolean equals(Object obj)
     {
@@ -158,10 +201,6 @@ public class Node
         return true;
     }
 
-    /**
-     * Generate a hash to identify this node by name.
-     * @return  Hash code identifying this node
-     */
     @Override
     public int hashCode()
     {
@@ -172,8 +211,9 @@ public class Node
 
     /**
      * Read a node from a configuration file.
-     * @param file  Configuration file to read from
-     * @return      Node that was read. Null if process failed.
+     *
+     * @param file Configuration file to read from
+     * @return Node that was read. Null if process failed.
      */
     public static Node readFromFile(File file)
     {
@@ -204,10 +244,11 @@ public class Node
     }
 
     /**
-     * Write a node to a configuration file.
-     * Overwrites existing file. Will fail silently.
-     * @param file      File to write to.
-     * @param node      Node to save.
+     * Write a node to a configuration file. Overwrites existing file. Will fail
+     * silently.
+     *
+     * @param file File to write to.
+     * @param node Node to save.
      */
     public static void writeToFile(File file, Node node)
     {
@@ -239,9 +280,10 @@ public class Node
     }
 
     /**
-     * Write this node to a configuration file.
-     * Overwrites existing file. Will fail silently.
-     * @param file  File to write to
+     * Write this node to a configuration file. Overwrites existing file. Will
+     * fail silently.
+     *
+     * @param file File to write to
      */
     public void writeToFile(File file)
     {
@@ -250,8 +292,9 @@ public class Node
 
     /**
      * Read a configuration file from a reader and return the node.
-     * @param r     The reader to read from
-     * @return      The node read
+     *
+     * @param r The reader to read from
+     * @return The node read
      */
     public static Node parse(Reader r)
     {
@@ -261,8 +304,9 @@ public class Node
 
     /**
      * Read a configuration file using provided parser and return the node.
-     * @param parser    The parser used to read
-     * @return          The node read
+     *
+     * @param parser The parser used to read
+     * @return The node read
      */
     private static Node parse(StreamTokenizer parser)
     {
@@ -298,8 +342,9 @@ public class Node
 
     /**
      * Build a StreamTokenizer for parsing vdf files.
-     * @param r     A reader to read from.
-     * @return      The StreamTokenizer to parse the given reader file.
+     *
+     * @param r A reader to read from.
+     * @return The StreamTokenizer to parse the given reader file.
      */
     private static StreamTokenizer getParser(Reader r)
     {
@@ -318,11 +363,6 @@ public class Node
         return parser;
     }
 
-    /**
-     * Returns a string representing this node and subnodes.
-     * Formatted for output to file.
-     * @return          String formatted for output to file.
-     */
     @Override
     public String toString()
     {
@@ -330,14 +370,15 @@ public class Node
     }
 
     /**
-     * Returns a string representing this node and subnodes.
-     * Formatted for output to file.
-     * @param level     The level of indentation to return
-     * @return          String formatted for output to file.
+     * Returns a string representing this node and subnodes. Formatted for
+     * output to file.
+     *
+     * @param level The level of indentation to return
+     * @return String formatted for output to file.
      */
     public String toString(int level)
     {
-         String output;
+        String output;
         if (value != null)
         {
             String name = '"' + StringEscapeUtils.escapeJava(this.getName()) + '"';
