@@ -36,7 +36,7 @@ public class SteamCategories
     {
         this.file = file;
         rootNode = Node.readFromFile(file);
-        if (rootNode.getName().equals(rootName))
+        if (!rootNode.getName().equals(rootName))
         {
             throw new InvalidFileException("This is not a valid shared config file.");
         }
