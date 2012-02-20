@@ -4,9 +4,12 @@
  */
 package com.slugsource.steamcategories.lib;
 
-import com.slugsource.steamcategories.gui.NotValidFileException;
+import com.slugsource.vdf.lib.InvalidFileException;
 import com.slugsource.vdf.lib.Node;
+import com.slugsource.vdf.lib.NodeNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  *
@@ -21,15 +24,23 @@ public class SteamCategories
     private final String rootName = "UserLocalConfigStore";
     
 
-    public SteamCategories(File file) throws NotValidFileException
+    public SteamCategories(File file) throws FileNotFoundException, IOException, InvalidFileException
     {
-        rootNode = rootNode.readFromFile(file);
-        if (rootNode.getName() != rootName)
+        rootNode = Node.readFromFile(file);
+        if (rootNode.getName().equals(rootName))
         {
-            throw new NotValidFileException("This is not a valid shared config file.");
+            throw new InvalidFileException("This is not a valid shared config file.");
         }
-    
-        appsNode = rootNode.getNode(appsPath, appsName);
+        
+        try
+        {
+            appsNode = rootNode.getNode(appsPath, appsName);
+        } catch (NodeNotFoundException ex)
+        {
+            throw new InvalidFileException("This is a not a valid shared config file.");
+        }
+        
+        
     }
             
 }
