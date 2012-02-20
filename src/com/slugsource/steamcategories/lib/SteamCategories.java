@@ -22,10 +22,19 @@ public class SteamCategories
     private final String[] appsPath = {"Software", "Valve", "Steam", "apps"};
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
+    private File file;
     
-
+    //TODO: Add docs
+    /**
+     * Constructor that takes file to read from.
+     * @param file
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws InvalidFileException 
+     */
     public SteamCategories(File file) throws FileNotFoundException, IOException, InvalidFileException
     {
+        this.file = file;
         rootNode = Node.readFromFile(file);
         if (rootNode.getName().equals(rootName))
         {
@@ -42,5 +51,36 @@ public class SteamCategories
         
         
     }
-            
+    
+    //TODO: Add docs
+    /**
+     * Sets the category of the given game
+     * @param app
+     * @param category 
+     */
+    public void setGameCategory(String app, String category)
+    {
+        String[] path = {app, "tags"};
+        appsNode.setValue(path, "0", category);
+    }
+    
+    
+    //TODO: Add docs
+    /**
+     * Save configuration to file specified
+     * @param file 
+     */
+    public void writeToFile(File file) throws IOException
+    {
+        rootNode.writeToFile(file);
+    }
+    
+    //TODO: Add Docs
+    /**
+     * Save configuration to file
+     */
+    public void writeToFile() throws IOException
+    {
+        writeToFile(file);
+    }
 }
