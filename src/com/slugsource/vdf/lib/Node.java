@@ -281,6 +281,18 @@ public class Node
         }
     }
     
+    public void delNode(String name) throws NodeNotFoundException
+    {
+        // Check arguments for nulls
+        if (name == null)
+        {
+            throw new NullPointerException("Name cannot be null.");
+        }
+        
+        Node node = new Node(name);
+        delNode(node);
+    }
+    
     @Override
     public boolean equals(Object obj)
     {

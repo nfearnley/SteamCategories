@@ -20,6 +20,7 @@ public class SteamCategories
 
     private Node rootNode;
     private Node appsNode;
+    private SteamApp[] apps;
     private final String[] appsPath =
     {
         "Software", "Valve", "Steam", "apps"
@@ -37,10 +38,18 @@ public class SteamCategories
      * @throws IOException If there is a problem reading from the filesystem
      * @throws InvalidFileException If the format of the file is incorrect
      */
-    public SteamCategories(File file) throws FileNotFoundException, IOException, InvalidFileException
+    public SteamCategories(File file, String steamID) throws FileNotFoundException, IOException, InvalidFileException
+    {
+        readFromFile(file);
+        
+        
+    }
+
+    // TODO: Add javadocs
+    private void readFromFile(File file) throws FileNotFoundException, IOException, InvalidFileException
     {
         this.file = file;
-        rootNode = Node.readFromFile(file);
+        this.rootNode = Node.readFromFile(file);
         if (!rootNode.getName().equals(rootName))
         {
             throw new InvalidFileException("This is not a valid shared config file.");
@@ -48,11 +57,17 @@ public class SteamCategories
 
         try
         {
-            appsNode = rootNode.getNode(appsPath, appsName);
+            this.appsNode = rootNode.getNode(appsPath, appsName);
         } catch (NodeNotFoundException ex)
         {
             throw new InvalidFileException("This is a not a valid shared config file.");
         }
+
+    }
+    
+    private void readGamesFromXML(String steamID)
+    {
+        // Load from XML file http://steamcommunity.com/id/{steamID}/games?xml=1
     }
 
     /**
@@ -80,6 +95,24 @@ public class SteamCategories
         };
         appsNode.setValue(path, "0", category);
         dirty = true;
+    }
+
+    /**
+     * Removes the category of the given game
+     *
+     * @param app The AppID of the steam game
+     * @throws NodeNotFoundException If the app or category was not found
+     */
+    public void removeGameCategory(String app)
+    {
+        try
+        {
+            appsNode.getNode(app);
+            appsNode.delNode(new Node("tags"));
+            dirty = true;
+        } catch (NodeNotFoundException e)
+        {
+        }
     }
 
     /**
