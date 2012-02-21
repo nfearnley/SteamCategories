@@ -17,20 +17,25 @@ import java.io.IOException;
  */
 public class SteamCategories
 {
+
     private Node rootNode;
     private Node appsNode;
-    private final String[] appsPath = {"Software", "Valve", "Steam", "apps"};
+    private final String[] appsPath =
+    {
+        "Software", "Valve", "Steam", "apps"
+    };
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
     private File file;
-    
-    //TODO: Add docs
+    private boolean dirty = false;
+
     /**
      * Constructor that takes file to read from.
-     * @param file
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws InvalidFileException 
+     *
+     * @param file File to load from
+     * @throws FileNotFoundException If the file could not found
+     * @throws IOException If there is a problem reading from the filesystem
+     * @throws InvalidFileException If the format of the file is incorrect
      */
     public SteamCategories(File file) throws FileNotFoundException, IOException, InvalidFileException
     {
@@ -40,7 +45,7 @@ public class SteamCategories
         {
             throw new InvalidFileException("This is not a valid shared config file.");
         }
-        
+
         try
         {
             appsNode = rootNode.getNode(appsPath, appsName);
@@ -48,34 +53,46 @@ public class SteamCategories
         {
             throw new InvalidFileException("This is a not a valid shared config file.");
         }
-        
-        
     }
-    
-    //TODO: Add docs
+
+    /**
+     * Returns whether or not this file has changed since last save
+     *
+     * @return True if file has changed since last save, false if it has not
+     * changed.
+     */
+    public boolean isDirty()
+    {
+        return dirty;
+    }
+
     /**
      * Sets the category of the given game
-     * @param app
-     * @param category 
+     *
+     * @param app The AppID of the steam game
+     * @param category The category to add the game to
      */
     public void setGameCategory(String app, String category)
     {
-        String[] path = {app, "tags"};
+        String[] path =
+        {
+            app, "tags"
+        };
         appsNode.setValue(path, "0", category);
+        dirty = true;
     }
-    
-    
-    //TODO: Add docs
+
     /**
      * Save configuration to file specified
-     * @param file 
+     *
+     * @param file File to save to
      */
     public void writeToFile(File file) throws IOException
     {
         rootNode.writeToFile(file);
+        dirty = false;
     }
-    
-    //TODO: Add Docs
+
     /**
      * Save configuration to file
      */
