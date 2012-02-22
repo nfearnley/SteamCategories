@@ -19,19 +19,17 @@ public class SteamCategoriesTest
 {
     public static void main(String[] args)
     {
+        File inFile = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
+        File outFile = new File("F:\\Programming\\SteamCategories\\testoutput.vdf");
+        String steamID = "nfearnley";
         try
         {
-            File inFile = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
-            File outFile = new File("F:\\Programming\\SteamCategories\\testoutput.vdf");
-            
-            SteamCategories cats = new SteamCategories(inFile);
-            
+            SteamCategories cats = new SteamCategories(inFile, steamID);
             cats.setGameCategory("72850", "FPS RPG");
-            
             cats.writeToFile(outFile);
         } catch (IOException | InvalidFileException ex)
         {
-            Logger.getLogger(SteamCategoriesTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Epic Failure");
         }
     }
 }

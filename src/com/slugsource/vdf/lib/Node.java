@@ -1,6 +1,7 @@
 package com.slugsource.vdf.lib;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -13,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Node
 {
-    
+
     private String name;
     private String value = null;
     private LinkedList<Node> children = null;
@@ -84,6 +85,139 @@ public class Node
     }
 
     /**
+     * Lookup a child node.
+     *
+     * @param node Child node to lookup. Cannot be null.
+     * @return Node or null if no node is found.
+     */
+    public Node getNode(Node node)
+    {
+        return getNode(node.getName());
+    }
+
+    /**
+     * Lookup a child node by name.
+     *
+     * @param name Name of child node. Cannot be null.
+     * @return Node or null if no node is found.
+     */
+    public Node getNode(String name)
+    {
+        // Check arguments for nulls
+        if (name == null)
+        {
+            throw new NullPointerException("Name cannot be null.");
+        }
+
+        // Check to see if this node holds children
+        if (children == null)
+        {
+            return null;
+        }
+
+        // Get child node index
+        int index = children.indexOf(new Node(name));
+
+        if (index == -1)
+        {
+            return null;
+        }
+        // Return child node
+        Node result = children.get(index);
+        return result;
+    }
+
+    /**
+     * Add a child node to this node. Will delete node value.
+     *
+     * @param newNode Child node to add. Cannot be null.
+     * @return True on success, False on failure
+     */
+    public boolean addNode(Node newNode)
+    {
+        // Check arguments for nulls
+        if (newNode == null)
+        {
+            throw new NullPointerException("Node cannot be null.");
+        }
+
+        // Check to see if this node holds children
+        if (children == null)
+        {
+            children = new LinkedList<Node>();
+            value = null;
+        }
+
+        boolean result = false;
+        // Check to see if child node exists
+        Node oldNode = getNode(newNode.name);
+        if (oldNode == null)
+        {
+            children.add(newNode);
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * Add a child node to this node. Will delete node value.
+     *
+     * @param name Name of child node to add. Cannot be null.
+     * @return True on success, False on failure
+     */
+    public boolean addNode(String name)
+    {
+        if (name == null)
+        {
+            throw new NullPointerException("Name cannot be null.");
+        }
+        return addNode(new Node(name));
+
+    }
+
+    /**
+     * Delete a child node from this node.
+     *
+     * @param node Child node to delete.
+     * @return True on success, False on failure
+     */
+    public boolean delNode(Node node)
+    {
+        // Check arguments for nulls
+        if (node == null)
+        {
+            throw new NullPointerException("Node cannot be null.");
+        }
+
+        // Check to see if this node holds children
+        if (children == null)
+        {
+            return false;
+        }
+
+        boolean success = children.remove(node);
+
+        return success;
+    }
+
+    /**
+     * Delete a child node from this node.
+     *
+     * @param name Name of child node to delete
+     * @return True on success, False on failure
+     */
+    public boolean delNode(String name)
+    {
+        // Check arguments for nulls
+        if (name == null)
+        {
+            throw new NullPointerException("Name cannot be null.");
+        }
+
+        return delNode(new Node(name));
+    }
+
+    /**
      * Set the value of a particular sub-node.
      *
      * @param path Array of node path that sub-node is contained in. If null, an
@@ -107,78 +241,14 @@ public class Node
             path = new String[0];
         }
 
-        // Loop over the nodes in the path, creating nodes if necessary
-        Node node = this;
-        
-        for (String nodeName : path)
+        Node newNode = new Node(name, value);
+        // Try adding the node
+        if (!addNode(path, newNode))
         {
-            Node childNode;
-            try
-            {
-                childNode = node.getNode(nodeName);
-            } catch (NodeNotFoundException e)
-            {
-                childNode = new Node(nodeName);
-                try
-                {
-                    node.addNode(childNode);
-                } catch (NodeAlreadyExistsException ex)
-                {
-                }
-            }
-            node = childNode;
+            // If failed, get the current node and set the value
+            Node node = getNode(path, name);
+            node.setValue(value);
         }
-
-        // Create/set the value of the node
-        Node valNode;
-        try
-        {
-            valNode = node.getNode(name);
-            valNode.setValue(value);
-        } catch (NodeNotFoundException ex)
-        {
-            valNode = new Node(name, value);
-            try
-            {
-                node.addNode(valNode);
-            } catch (NodeAlreadyExistsException e)
-            {
-            }
-        }
-    }
-
-    /**
-     * Lookup a child node by name.
-     *
-     * @param name Name of child node.
-     * @return Node if found.
-     * @throws NodeNotFoundException If the node could not be found.
-     */
-    public Node getNode(String name) throws NodeNotFoundException
-    {
-        // Check arguments for nulls
-        if (name == null)
-        {
-            throw new NullPointerException("Name cannot be null.");
-        }
-
-        // Check to see if this node holds children
-        if (children == null)
-        {
-            throw new NodeNotFoundException("Node not found.");
-        }
-
-        // Get child node index
-        int index = children.indexOf(new Node(name));
-        
-        if (index == -1)
-        {
-            throw new NodeNotFoundException("Node not found.");
-        }
-        // Return child node
-        Node result = children.get(index);
-        assert result != null;
-        return result;
     }
 
     /**
@@ -187,10 +257,9 @@ public class Node
      * @param path Array of node path that sub-node is contained in. If null, an
      * empty array is assumed.
      * @param name Name of sub-node to get
-     * @return Sub-node if found.
-     * @throws NodeNotFoundException If node cannot be found.
+     * @return Sub-node or null if node cannot be found.
      */
-    public Node getNode(String[] path, String name) throws NodeNotFoundException
+    public Node getNode(String[] path, String name)
     {
         // Check arguments for nulls
         if (path == null)
@@ -204,7 +273,7 @@ public class Node
 
         // Loop through nodes in the path
         Node node = this;
-        
+
         for (String nodeName : path)
         {
             Node childNode = node.getNode(nodeName);
@@ -212,87 +281,83 @@ public class Node
             // if node is null, then node cannot be found
             if (node == null)
             {
-                throw new NodeNotFoundException("Node could not be found.");
+                break;
             }
         }
-        assert node != null;
         return node;
+
     }
 
     /**
-     * Add a child node to this node. Will delete node value. Will fail silently
-     * if node already exists.
+     * Add a child node to this node and deletes this node's value.
      *
-     * @param node Child node to add
-     * @throws NodeAlreadyExistsException Is thrown when trying to add a node
-     * that already exists.
+     * @param path Array of node path that sub-node is contained in. If null, an
+     * empty array is assumed.
+     * @param newNode Child node to add.
+     * @return True on success, False on failure
      */
-    public void addNode(Node node) throws NodeAlreadyExistsException
+    public boolean addNode(String[] path, Node newNode)
     {
-        // Check arguments for nulls
-        if (node == null)
+        // Check for null arguments
+        if (newNode == null)
         {
             throw new NullPointerException("Node cannot be null.");
         }
 
-        // Check to see if this node holds children
-        if (children == null)
+        // Assume null path is empty
+        if (path == null)
         {
-            children = new LinkedList<Node>();
-            value = null;
+            path = new String[0];
         }
 
-        // Check to see if child node exists
-        if (!children.contains(node))
+        // Loop over the nodes in the path, creating nodes if necessary
+        Node node = this;
+
+        for (String nodeName : path)
         {
-            children.add(node);
-        } else
-        {
-            throw new NodeAlreadyExistsException("This node already exists.");
+            Node childNode = node.getNode(nodeName);
+            if (childNode == null)
+            {
+                childNode = new Node(nodeName);
+                node.addNode(childNode);
+            }
+            node = childNode;
+
         }
+
+        return node.addNode(newNode);
     }
 
     /**
-     * Delete a child node from this node;
+     * Delete a sub-node from this node.
      *
-     * @param node Child node to delete;
-     * @throws NodeNotFoundException Is thrown when trying to delete a node that
-     * doesn't exist.
+     * @param path Array of node path that sub-node is contained in. If null, an
+     * empty array is assumed.
+     * @param name Name of sub-node to delete.
+     * @return True on success, False on failure
      */
-    public void delNode(Node node) throws NodeNotFoundException
-    {
-        // Check arguments for nulls
-        if (node == null)
-        {
-            throw new NullPointerException("Node cannot be null.");
-        }
-
-        // Check to see if this node holds children
-        if (children == null)
-        {
-            throw new NodeNotFoundException("Node not found.");
-        }
-        
-        boolean success = children.remove(node);
-        
-        if (!success)
-        {
-            throw new NodeNotFoundException("Node not found.");
-        }
-    }
-    
-    public void delNode(String name) throws NodeNotFoundException
+    public boolean delNode(String[] path, String name)
     {
         // Check arguments for nulls
         if (name == null)
         {
             throw new NullPointerException("Name cannot be null.");
         }
-        
-        Node node = new Node(name);
-        delNode(node);
+        if (path == null)
+        {
+            path = new String[0];
+        }
+
+        boolean result = false;
+        Node node = getNode(name);
+        if (node != null)
+        {
+            result = node.delNode(name);
+        }
+        return result;
+
     }
-    
+
     @Override
     public boolean equals(Object obj)
     {
@@ -311,7 +376,7 @@ public class Node
         }
         return true;
     }
-    
+
     @Override
     public int hashCode()
     {
@@ -337,7 +402,7 @@ public class Node
         {
             throw new NullPointerException("File cannot be null.");
         }
-        
+
         FileInputStream fis = null;
         Node result = null;
         try
@@ -382,11 +447,11 @@ public class Node
         {
             throw new NullPointerException("Node cannot be null.");
         }
-        
+
         FileOutputStream fos = null;
         OutputStreamWriter osw;
         BufferedWriter w;
-        
+
         try
         {
             // Write the node to a file
@@ -459,39 +524,35 @@ public class Node
         {
             throw new NullPointerException("Parser cannot be null.");
         }
-        
+
         Node node = null;
-        try
+        // Read node name
+        parser.nextToken();
+        String name = parser.sval;
+
+        parser.nextToken();
+        // Check if next token is value or open of branch
+        if (parser.sval != null)
         {
-            // Read node name
-            parser.nextToken();
-            String name = parser.sval;
-            
-            parser.nextToken();
-            // Check if next token is value or open of branch
-            if (parser.sval != null)
+            // If token is value, read value
+            String value = parser.sval;
+            node = new Node(name, value);
+
+        } else if (parser.ttype == '{')
+        {
+            // If token is open branch, read child nodes
+            Node branchNode = new Node(name);
+            while (parser.nextToken() != '}')
             {
-                // If token is value, read value
-                String value = parser.sval;
-                node = new Node(name, value);
-                
-            } else if (parser.ttype == '{')
-            {
-                // If token is open branch, read child nodes
-                Node branchNode = new Node(name);
-                while (parser.nextToken() != '}')
+                parser.pushBack();
+                if (!branchNode.addNode(Node.parse(parser)))
                 {
-                    parser.pushBack();
-                    branchNode.addNode(Node.parse(parser));
+                    throw new InvalidFileException("Could not read node from file.");
                 }
-                node = branchNode;
             }
-        } catch (NodeAlreadyExistsException e)
-        {
-            
-            throw new InvalidFileException("Could not read node from file.");
+            node = branchNode;
         }
-        
+
         assert node != null;
         return node;
     }
@@ -508,7 +569,7 @@ public class Node
         {
             throw new IllegalArgumentException("Reader cannot be null.");
         }
-        
+
         StreamTokenizer parser = new StreamTokenizer(reader);
         parser.resetSyntax();
         parser.eolIsSignificant(false);
@@ -548,7 +609,7 @@ public class Node
         {
             throw new IllegalArgumentException("Level cannot be less than zero.");
         }
-        
+
         String output;
         // Check if this is a value node or branch node
         if (value != null)
@@ -561,13 +622,13 @@ public class Node
         {
             // Build the string for branch nodes
             String name = '"' + StringEscapeUtils.escapeJava(getName()) + '"';
-            
+
             StringBuilder childrenOutput = new StringBuilder();
             for (Node child : children)
             {
                 childrenOutput.append(child.toVdf(level + 1));
             }
-            
+
             output = StringUtils.repeat('\t', level) + name + '\n';
             output += StringUtils.repeat('\t', level) + "{\n";
             output += childrenOutput;

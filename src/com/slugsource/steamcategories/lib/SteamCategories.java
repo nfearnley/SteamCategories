@@ -21,6 +21,7 @@ public class SteamCategories
     private Node rootNode;
     private Node appsNode;
     private SteamApp[] apps;
+    private String steamID;
     private final String[] appsPath =
     {
         "Software", "Valve", "Steam", "apps"
@@ -34,20 +35,33 @@ public class SteamCategories
      * Constructor that takes file to read from.
      *
      * @param file File to load from
+     * @param steamID Steam ID of user
      * @throws FileNotFoundException If the file could not found
      * @throws IOException If there is a problem reading from the filesystem
      * @throws InvalidFileException If the format of the file is incorrect
      */
     public SteamCategories(File file, String steamID) throws FileNotFoundException, IOException, InvalidFileException
     {
+        if (file == null)
+        {
+            throw new NullPointerException("File cannot be null.");
+        }
+        if (steamID == null)
+        {
+            throw new NullPointerException("SteamID cannot be null.");
+        }
         readFromFile(file);
-        
-        
+        this.steamID = steamID;
     }
 
     // TODO: Add javadocs
     private void readFromFile(File file) throws FileNotFoundException, IOException, InvalidFileException
     {
+        if (file == null)
+        {
+            throw new NullPointerException("File cannot be null.");
+
+        }
         this.file = file;
         this.rootNode = Node.readFromFile(file);
         if (!rootNode.getName().equals(rootName))
@@ -55,19 +69,23 @@ public class SteamCategories
             throw new InvalidFileException("This is not a valid shared config file.");
         }
 
-        try
-        {
-            this.appsNode = rootNode.getNode(appsPath, appsName);
-        } catch (NodeNotFoundException ex)
+        this.appsNode = rootNode.getNode(appsPath, appsName);
+        if (this.appsNode == null)
         {
             throw new InvalidFileException("This is a not a valid shared config file.");
         }
 
     }
-    
+
+    // TODO: Add javadocs
     private void readGamesFromXML(String steamID)
     {
-        // Load from XML file http://steamcommunity.com/id/{steamID}/games?xml=1
+        if (steamID == null)
+        {
+            throw new NullPointerException("SteamID cannot be null.");
+        }
+
+        // TODO: Load from XML file http://steamcommunity.com/id/{steamID}/games?xml=1
     }
 
     /**
@@ -89,6 +107,15 @@ public class SteamCategories
      */
     public void setGameCategory(String app, String category)
     {
+        if (app == null)
+        {
+            throw new NullPointerException("App cannot be null.");
+        }
+        if (category == null)
+        {
+            throw new NullPointerException("Category cannot be null.");
+        }
+
         String[] path =
         {
             app, "tags"
@@ -101,18 +128,23 @@ public class SteamCategories
      * Removes the category of the given game
      *
      * @param app The AppID of the steam game
-     * @throws NodeNotFoundException If the app or category was not found
+     * @return True on success, False on failure
      */
-    public void removeGameCategory(String app)
+    public boolean removeGameCategory(String app)
     {
-        try
+        if (app == null)
         {
-            appsNode.getNode(app);
-            appsNode.delNode(new Node("tags"));
-            dirty = true;
-        } catch (NodeNotFoundException e)
-        {
+            throw new NullPointerException("App cannot be null.");
         }
+
+        Node gameNode = appsNode.getNode(app);
+        boolean result = true;
+        if (gameNode != null)
+        {
+            result = gameNode.delNode(new Node("tags"));
+            dirty = true;
+        }
+        return result;
     }
 
     /**
@@ -122,6 +154,10 @@ public class SteamCategories
      */
     public void writeToFile(File file) throws IOException
     {
+        if (file == null)
+        {
+            throw new NullPointerException("File cannot be null.");
+        }
         rootNode.writeToFile(file);
         dirty = false;
     }
