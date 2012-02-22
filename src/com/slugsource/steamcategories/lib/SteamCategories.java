@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Savepoint;
+import java.util.List;
 
 /**
  *
@@ -21,8 +22,8 @@ public class SteamCategories
 
     private Node rootNode;
     private Node appsNode;
-    private String oldVdf;
-    private SteamApp[] apps;
+    private List<SteamApp> apps;
+    private List<SteamApp> oldApps;
     private String steamID;
     private File file;
     private final String[] appsPath =
@@ -51,12 +52,18 @@ public class SteamCategories
         {
             throw new NullPointerException("SteamID cannot be null.");
         }
-        
+
         this.file = file;
         this.steamID = steamId;
-                
+
+        // Load configuration from file
         readFromFile(file);
+
+        // Load games from xml
         readGamesFromSteamId(steamId);
+
+        // Sync xml and configuration
+        syncNodeToApps();
     }
 
     // TODO: Add javadocs
@@ -79,9 +86,13 @@ public class SteamCategories
         {
             throw new InvalidFileException("This is a not a valid shared config file.");
         }
-        oldVdf = rootNode.toVdf();
     }
 
+    private void syncOldApps()
+    {
+        oldApps = cloneList(apps);
+    }
+    
     // TODO: Add javadocs
     private void readGamesFromSteamId(String steamId) throws IOException
     {
@@ -90,7 +101,8 @@ public class SteamCategories
             throw new NullPointerException("SteamID cannot be null.");
         }
 
-        apps = SteamApp.readFromSteamId(steamId);
+        apps = SteamApp.readGamesFromSteamId(steamId);
+        oldApps = apps.subList(0, apps.size() - 1);
     }
 
     /**
@@ -101,47 +113,151 @@ public class SteamCategories
      */
     public boolean isDirty()
     {
-        return oldVdf != rootNode.toVdf();
+        boolean result = false;
+        for (SteamApp app : apps)
+        {
+            if (isDirty(app))
+            {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private boolean isDirty(SteamApp app)
+    {
+        String category = app.getCategory();
+
+        int oldIndex = oldApps.indexOf(app);
+        SteamApp oldApp = oldApps.get(oldIndex);
+
+        String oldCategory = oldApp.getCategory();
+
+        boolean result = false;
+        if (category == null && oldCategory == null)
+        {
+            result = false;
+        }
+        else
+        {
+            result = !category.equals(oldCategory);
+        }
+
+        return result;
+    }
+
+    public List<SteamApp> getGamesList()
+    {
+        return cloneList(apps);
+    }
+    
+    public String getGameCategory(String appId)
+    {
+        if (appId == null)
+        {
+            throw new NullPointerException("AppId cannot be null.");
+        }
+        int index = apps.indexOf(new SteamApp("", appId));
+        if (index == -1)
+        {
+            return null;
+        }
+
+        String category = apps.get(index).getCategory();
+        return category;
+    }
+
+    public boolean setGameCategory(String appId, String category)
+    {
+        if (appId == null)
+        {
+            throw new NullPointerException("AppId cannot be null.");
+        }
+        int index = apps.indexOf(new SteamApp("", appId));
+        if (index == -1)
+        {
+            return false;
+        }
+
+        apps.get(index).setCategory(category);
+        return true;
     }
 
     /**
      * Sets the category of the given game
      *
      * @param app The AppID of the steam game
-     * @param category The category to add the game to
+     * @return Category if set, null if not set
      */
-    public void setGameCategory(String app, String category)
+    private String getNodeGameCategory(String app)
     {
         if (app == null)
         {
             throw new NullPointerException("App cannot be null.");
-        }
-        if (category == null)
-        {
-            throw new NullPointerException("Category cannot be null.");
         }
 
         String[] path =
         {
             app, "tags"
         };
+        String value = appsNode.getValue(path, "0");
+        return value;
+    }
+
+    /**
+     * Sets the category of the given game
+     *
+     * @param appId The AppID of the steam game
+     * @param category The category to add the game to. If null, category is
+     * removed.
+     * @return True on success, False on failure
+     */
+    private boolean setNodeGameCategory(String appId, String category)
+    {
+        if (appId == null)
+        {
+            throw new NullPointerException("App cannot be null.");
+        }
+        if (category == null)
+        {
+            return removeNodeGameCategory(appId);
+        }
+        int index = apps.indexOf(new SteamApp("", appId));
+        if (index == -1)
+        {
+            return false;
+        }
+
+        String[] path =
+        {
+            appId, "tags"
+        };
         appsNode.setValue(path, "0", category);
+        apps.get(index).setCategory(category);
+
+        return true;
     }
 
     /**
      * Removes the category of the given game
      *
-     * @param app The AppID of the steam game
+     * @param appId The AppID of the steam game
      * @return True on success, False on failure
      */
-    public boolean removeGameCategory(String app)
+    private boolean removeNodeGameCategory(String appId)
     {
-        if (app == null)
+        if (appId == null)
         {
             throw new NullPointerException("App cannot be null.");
         }
+        int index = apps.indexOf(new SteamApp("", appId));
+        if (index == -1)
+        {
+            return false;
+        }
 
-        Node gameNode = appsNode.getNode(app);
+        Node gameNode = appsNode.getNode(appId);
         boolean result = true;
         if (gameNode != null)
         {
@@ -150,6 +266,27 @@ public class SteamCategories
         return result;
     }
 
+    private void syncAppsToNode()
+    {
+        for (SteamApp app : apps)
+        {
+            if (isDirty(app))
+            {
+                setNodeGameCategory(app.getAppid(), app.getCategory());
+            }
+        }
+    }
+    
+    private void syncNodeToApps()
+    {
+        for (SteamApp app : apps)
+        {
+            String appId = app.getAppid();
+            String category = getNodeGameCategory(appId);
+            app.setCategory(category);
+        }
+    }
+    
     /**
      * Save configuration to file specified
      *
@@ -157,12 +294,19 @@ public class SteamCategories
      */
     public void writeToFile(File file) throws IOException
     {
+        syncAppsToNode();
         if (file == null)
         {
             throw new NullPointerException("File cannot be null.");
         }
         rootNode.writeToFile(file);
-        oldVdf = rootNode.toVdf();
+        syncOldApps();
+        
+    }
+    
+    public List<SteamApp> cloneList(List<SteamApp> list)
+    {
+        return apps.subList(0, apps.size() - 1);
     }
 
     /**

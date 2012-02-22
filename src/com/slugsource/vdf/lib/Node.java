@@ -216,6 +216,37 @@ public class Node
 
         return delNode(new Node(name));
     }
+    
+    /**
+     * Get the value of a particular sub-node.
+     *
+     * @param path Array of node path that sub-node is contained in. If null, an
+     * empty array is assumed.
+     * @param name Name of sub-node to get. Cannot be null.
+     * @return Value of node, null if node does not exist.
+     */
+    public String getValue(String[] path, String name)
+    {
+        // Check for null arguments
+        if (name == null)
+        {
+            throw new NullPointerException("Name cannot be null.");
+        }
+        if (path == null)
+        {
+            path = new String[0];
+        }
+        
+        Node node = getNode(path, name);
+        String value = null;
+        
+        if (node != null)
+        {
+            value = node.getValue();
+        }
+        
+        return value;
+    }
 
     /**
      * Set the value of a particular sub-node.
