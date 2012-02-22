@@ -10,6 +10,7 @@ import com.slugsource.vdf.lib.NodeNotFoundException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Savepoint;
 
 /**
  *
@@ -20,38 +21,42 @@ public class SteamCategories
 
     private Node rootNode;
     private Node appsNode;
+    private String oldVdf;
     private SteamApp[] apps;
     private String steamID;
+    private File file;
     private final String[] appsPath =
     {
         "Software", "Valve", "Steam", "apps"
     };
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
-    private File file;
-    private boolean dirty = false;
 
     /**
      * Constructor that takes file to read from.
      *
      * @param file File to load from
-     * @param steamID Steam ID of user
+     * @param steamId Steam ID of user
      * @throws FileNotFoundException If the file could not found
      * @throws IOException If there is a problem reading from the filesystem
      * @throws InvalidFileException If the format of the file is incorrect
      */
-    public SteamCategories(File file, String steamID) throws FileNotFoundException, IOException, InvalidFileException
+    public SteamCategories(File file, String steamId) throws FileNotFoundException, IOException, InvalidFileException
     {
         if (file == null)
         {
             throw new NullPointerException("File cannot be null.");
         }
-        if (steamID == null)
+        if (steamId == null)
         {
             throw new NullPointerException("SteamID cannot be null.");
         }
+        
+        this.file = file;
+        this.steamID = steamId;
+                
         readFromFile(file);
-        this.steamID = steamID;
+        readGamesFromSteamId(steamId);
     }
 
     // TODO: Add javadocs
@@ -74,18 +79,18 @@ public class SteamCategories
         {
             throw new InvalidFileException("This is a not a valid shared config file.");
         }
-
+        oldVdf = rootNode.toVdf();
     }
 
     // TODO: Add javadocs
-    private void readGamesFromXML(String steamID)
+    private void readGamesFromSteamId(String steamId) throws IOException
     {
-        if (steamID == null)
+        if (steamId == null)
         {
             throw new NullPointerException("SteamID cannot be null.");
         }
 
-        // TODO: Load from XML file http://steamcommunity.com/id/{steamID}/games?xml=1
+        apps = SteamApp.readFromSteamId(steamId);
     }
 
     /**
@@ -96,7 +101,7 @@ public class SteamCategories
      */
     public boolean isDirty()
     {
-        return dirty;
+        return oldVdf != rootNode.toVdf();
     }
 
     /**
@@ -121,7 +126,6 @@ public class SteamCategories
             app, "tags"
         };
         appsNode.setValue(path, "0", category);
-        dirty = true;
     }
 
     /**
@@ -142,7 +146,6 @@ public class SteamCategories
         if (gameNode != null)
         {
             result = gameNode.delNode(new Node("tags"));
-            dirty = true;
         }
         return result;
     }
@@ -159,7 +162,7 @@ public class SteamCategories
             throw new NullPointerException("File cannot be null.");
         }
         rootNode.writeToFile(file);
-        dirty = false;
+        oldVdf = rootNode.toVdf();
     }
 
     /**

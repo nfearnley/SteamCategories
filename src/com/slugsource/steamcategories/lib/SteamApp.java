@@ -4,7 +4,18 @@
  */
 package com.slugsource.steamcategories.lib;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  *
@@ -16,6 +27,7 @@ public class SteamApp
     private String name;
     private String appid;
 
+    // TODO: Add javadocs
     public SteamApp(String name, String appid)
     {
         if (name == null)
@@ -31,11 +43,13 @@ public class SteamApp
 
     }
 
+    // TODO: Add javadocs
     public String getAppid()
     {
         return appid;
     }
 
+    // TODO: Add javadocs
     public String getName()
     {
         return name;
@@ -66,5 +80,66 @@ public class SteamApp
         int hash = 7;
         hash = 29 * hash + Objects.hashCode(this.appid);
         return hash;
+    }
+
+    // TODO: Fix Throws
+    // TODO: Add javadocs
+    public static SteamApp[] readFromUrl(String url) throws IOException
+    {
+        URL gamesUrl = new URL(url);
+
+        InputStream is = null;
+        InputStreamReader isr = null;
+        BufferedReader in = null;
+        try
+        {
+            is = gamesUrl.openStream();
+            isr = new InputStreamReader(is);
+            in = new BufferedReader(isr);
+
+            // TODO: Read XML
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = null;
+            try
+            {
+                db = dbf.newDocumentBuilder();
+            } catch (ParserConfigurationException e)
+            {
+                throw new IOException(e);
+            }
+            db.parse(in);
+            
+        } finally
+        {
+            if (is != null)
+            {
+                try
+                {
+                    is.close();
+                } catch (IOException ex)
+                {
+                }
+            }
+        }
+        // TODO: Return something useful
+        return null;
+
+    }
+
+    // TODO: Fix Throws
+    // TODO: Add javadocs
+    public static SteamApp[] readFromSteamId(String steamId) throws IOException
+    {
+        final String urlPrefix = "http://steamcommunity.com/id/";
+        final String urlSuffix = "/games?xml=1";
+
+        String url = urlPrefix + steamId + urlSuffix;
+
+        SteamApp[] result = null;
+
+        
+        result = readFromUrl(url);
+
+        return result;
     }
 }
