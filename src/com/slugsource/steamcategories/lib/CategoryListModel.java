@@ -12,25 +12,29 @@ import javax.swing.AbstractListModel;
  */
 public class CategoryListModel extends AbstractListModel<String>
 {
-    SteamCategories cats;
-    
-    public CategoryListModel(SteamCategories cats)
+
+    AppList apps;
+
+    public CategoryListModel(AppList apps)
     {
-        if (cats == null)
+        if (apps == null)
+        {
             throw new NullPointerException("Cats cannot be null.");
-        this.cats = cats;
+        }
+        this.apps = apps;
     }
 
     @Override
     public int getSize()
     {
-        return cats.getCategorySize();
+        int size = apps.getCategorySize();
+        return size;
     }
 
     @Override
     public String getElementAt(int index)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String element = apps.getCategory(index);
+        return element;
     }
-    
 }

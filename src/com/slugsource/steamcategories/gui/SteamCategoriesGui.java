@@ -8,8 +8,8 @@ import com.slugsource.steamcategories.lib.SteamCategories;
 import com.slugsource.vdf.lib.InvalidFileException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 
 /**
  *
@@ -154,10 +154,10 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             cats = null;
             return;
         }
-        Set<String> apps = cats.getAppIdList();
-        Set<String> categories = cats.getCategoryList();
-        appsList.setListData(apps.toArray());
-        categoriesList.setListData(categories.toArray());
+        ListModel appListModel = cats.getAppListModel();
+        ListModel catListModel = cats.getCategoryListModel();
+        appsList.setModel(appListModel);
+        categoriesList.setModel(catListModel);
     }
     
     /**

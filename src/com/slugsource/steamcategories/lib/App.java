@@ -92,7 +92,7 @@ public class App
         hash = 29 * hash + Objects.hashCode(this.appid);
         return hash;
     }
-    
+
     public App clone()
     {
         App app = new App(name, appid);

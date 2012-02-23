@@ -7,7 +7,8 @@ package com.slugsource.steamcategories.lib;
 import com.slugsource.vdf.lib.InvalidFileException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
+import javax.swing.ListModel;
 
 /**
  *
@@ -101,12 +102,12 @@ public class SteamCategories
         syncCategoryFileToApps();
     }
     
-    public Set<String> getAppIdList()
+    public List<String> getAppIdList()
     {
         return apps.getAppIdList();
     }
     
-    public Set<String> getCategoryList()
+    public List<String> getCategoryList()
     {
         return apps.getCategoryList();
     }
@@ -136,14 +137,14 @@ public class SteamCategories
         categoryFile.writeToFile();
         apps.syncOldApps();
     }
-
-    public int getAppSize()
+    
+    public ListModel getAppListModel()
     {
-        return apps.getAppSize();
+        return new AppListModel(apps);
     }
     
-    public int getCategorySize()
+    public ListModel getCategoryListModel()
     {
-        return apps.getCategorySize();
+        return new CategoryListModel(apps);
     }
 }

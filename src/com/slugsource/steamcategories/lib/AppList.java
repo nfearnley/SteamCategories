@@ -5,9 +5,7 @@
 package com.slugsource.steamcategories.lib;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,7 +24,7 @@ public class AppList
     private String steamId;
     private HashMap<String, App> apps;
     private HashMap<String, App> oldApps;
-    private Set<String> categories;
+    private List<String> categories;
 
     public AppList()
     {
@@ -80,12 +78,14 @@ public class AppList
         return result;
     }
 
-    public Set<String> getAppIdList()
+    public List<String> getAppIdList()
     {
-        return apps.keySet();
+        Set keys = apps.keySet();
+        List list = new Vector(keys);
+        return list;
     }
-    
-    public Set<String> getCategoryList()
+
+    public List<String> getCategoryList()
     {
         return categories;
     }
@@ -94,10 +94,67 @@ public class AppList
     {
         return apps.size();
     }
-    
+
     public int getCategorySize()
     {
         return categories.size();
+    }
+
+    public String getName(String appId)
+    {
+        if (apps == null)
+        {
+            throw new IllegalStateException("apps must be loaded before getting an app name.");
+        }
+        if (appId == null)
+        {
+            throw new NullPointerException("AppId cannot be null.");
+        }
+
+        App app = apps.get(appId);
+        String name = app.getName();
+
+        return name;
+    }
+
+    public String getAppId(int index)
+    {
+        if (apps == null)
+        {
+            throw new IllegalStateException("apps must be loaded before getting an app id.");
+        }
+        if (index < 0)
+        {
+            throw new IndexOutOfBoundsException("Index cannot be less than 1.");
+        }
+        if (index > getAppSize() - 1)
+        {
+            throw new IndexOutOfBoundsException("Index cannot be greater than app size.");
+        }
+
+        List<String> appIdList = getAppIdList();
+        String appId = appIdList.get(index);
+        return appId;
+    }
+
+    public String getName(int index)
+    {
+        if (apps == null)
+        {
+            throw new IllegalStateException("apps must be loaded before getting an app name.");
+        }
+        if (index < 0)
+        {
+            throw new IndexOutOfBoundsException("Index cannot be less than 1.");
+        }
+        if (index > getAppSize() - 1)
+        {
+            throw new IndexOutOfBoundsException("Index cannot be greater than app size.");
+        }
+
+        String appId = getAppId(index);
+        String name = getName(appId);
+        return name;
     }
 
     public String getCategory(String appId)
@@ -121,21 +178,24 @@ public class AppList
         return category;
     }
 
-    public String getName(String appId)
+    public String getCategory(int index)
     {
         if (apps == null)
         {
-            throw new IllegalStateException("apps must be loaded before getting an app category.");
+            throw new IllegalStateException("apps must be loaded before getting an category name.");
         }
-        if (appId == null)
+        if (index < 0)
         {
-            throw new NullPointerException("AppId cannot be null.");
+            throw new IndexOutOfBoundsException("Index cannot be less than 1.");
+        }
+        if (index > getCategorySize() - 1)
+        {
+            throw new IndexOutOfBoundsException("Index cannot be greater than category size.");
         }
 
-        App app = apps.get(appId);
-        String name = app.getName();
-        
-        return name;
+        List<String> catList = getCategoryList();
+        String category = catList.get(index);
+        return category;
     }
 
     public boolean setCategory(String appId, String category)
@@ -157,7 +217,7 @@ public class AppList
 
             if (category != null)
             {
-                categories.add(category);
+                addCategory(category);
             }
             result = true;
         }
@@ -177,7 +237,7 @@ public class AppList
             throw new IllegalStateException("SteamId must be set before calling readAppsFromSteamId().");
         }
         this.apps = getAppsFromSteamId(steamId);
-        categories = new HashSet<String>();
+        categories = new Vector<String>();
         syncOldApps();
     }
 
@@ -220,7 +280,7 @@ public class AppList
 
     private static HashMap<String, App> getAppsFromXml(Element doc) throws IOException
     {
-        HashMap<String, App> appsList = new HashMap<String, App>();
+        HashMap<String, App> appsList = new LinkedHashMap<String, App>();
         NodeList nl = doc.getElementsByTagName("game");
         assert (nl != null);
 
@@ -288,7 +348,7 @@ public class AppList
 
     private static HashMap<String, App> cloneList(HashMap<String, App> list)
     {
-        HashMap<String, App> result = new HashMap<String, App>();
+        HashMap<String, App> result = new LinkedHashMap<String, App>();
         for (String key : list.keySet())
         {
             App app = list.get(key);
@@ -300,5 +360,20 @@ public class AppList
     public void syncOldApps()
     {
         oldApps = cloneList(apps);
+    }
+
+    private void addCategory(String category)
+    {
+        if (category == null)
+        {
+            return;
+        }
+
+        if (categories.contains(category))
+        {
+            return;
+        }
+
+        categories.add(category);
     }
 }

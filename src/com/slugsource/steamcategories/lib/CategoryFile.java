@@ -78,7 +78,7 @@ public class CategoryFile
         {
             return null;
         }
-        
+
         String[] path =
         {
             appId, "tags"
