@@ -20,19 +20,19 @@ import org.xml.sax.SAXException;
  *
  * @author Nathan Fearnley
  */
-public class SteamAppList
+public class AppList
 {
 
     private String steamId;
-    private HashMap<String, SteamApp> apps;
-    private HashMap<String, SteamApp> oldApps;
+    private HashMap<String, App> apps;
+    private HashMap<String, App> oldApps;
     private Set<String> categories;
 
-    public SteamAppList()
+    public AppList()
     {
     }
 
-    public SteamAppList(String steamId)
+    public AppList(String steamId)
     {
         this.steamId = steamId;
     }
@@ -63,8 +63,8 @@ public class SteamAppList
 
     public boolean isDirty(String appId)
     {
-        SteamApp app = apps.get(appId);
-        SteamApp oldApp = oldApps.get(appId);
+        App app = apps.get(appId);
+        App oldApp = oldApps.get(appId);
 
         String category = app.getCategory();
         String oldCategory = oldApp.getCategory();
@@ -111,7 +111,7 @@ public class SteamAppList
             throw new NullPointerException("AppId cannot be null.");
         }
 
-        SteamApp app = apps.get(appId);
+        App app = apps.get(appId);
         String category = null;
         if (app != null)
         {
@@ -132,7 +132,7 @@ public class SteamAppList
             throw new NullPointerException("AppId cannot be null.");
         }
 
-        SteamApp app = apps.get(appId);
+        App app = apps.get(appId);
         String name = app.getName();
         
         return name;
@@ -150,7 +150,7 @@ public class SteamAppList
         }
 
         boolean result = false;
-        SteamApp app = apps.get(appId);
+        App app = apps.get(appId);
         if (app != null)
         {
             app.setCategory(category);
@@ -182,20 +182,20 @@ public class SteamAppList
     }
 
     // TODO: Add javadocs
-    private static HashMap<String, SteamApp> getAppsFromSteamId(String steamId) throws IOException
+    private static HashMap<String, App> getAppsFromSteamId(String steamId) throws IOException
     {
         final String urlPrefix = "http://steamcommunity.com/id/";
         final String urlSuffix = "/games?xml=1";
 
         String url = urlPrefix + steamId + urlSuffix;
 
-        HashMap<String, SteamApp> appsList = getAppsFromUrl(url);
+        HashMap<String, App> appsList = getAppsFromUrl(url);
 
         return appsList;
     }
 
     // TODO: Add javadocs
-    private static HashMap<String, SteamApp> getAppsFromUrl(String url) throws IOException
+    private static HashMap<String, App> getAppsFromUrl(String url) throws IOException
     {
 
         Element docElem = null;
@@ -214,19 +214,19 @@ public class SteamAppList
 
         docElem = doc.getDocumentElement();
 
-        HashMap<String, SteamApp> appsList = getAppsFromXml(docElem);
+        HashMap<String, App> appsList = getAppsFromXml(docElem);
         return appsList;
     }
 
-    private static HashMap<String, SteamApp> getAppsFromXml(Element doc) throws IOException
+    private static HashMap<String, App> getAppsFromXml(Element doc) throws IOException
     {
-        HashMap<String, SteamApp> appsList = new HashMap<String, SteamApp>();
+        HashMap<String, App> appsList = new HashMap<String, App>();
         NodeList nl = doc.getElementsByTagName("game");
         assert (nl != null);
 
         for (int x = 0; x < nl.getLength(); x++)
         {
-            SteamApp app = getAppFromXml((Element) nl.item(x));
+            App app = getAppFromXml((Element) nl.item(x));
             appsList.put(app.getAppid(), app);
         }
 
@@ -234,7 +234,7 @@ public class SteamAppList
     }
 
     // TODO: Add javadocs
-    private static SteamApp getAppFromXml(Element element) throws IOException
+    private static App getAppFromXml(Element element) throws IOException
     {
         if (element == null)
         {
@@ -253,7 +253,7 @@ public class SteamAppList
             throw new IOException("Could not read app element from xml.");
         }
 
-        SteamApp app = new SteamApp(name, appId);
+        App app = new App(name, appId);
         return app;
     }
 
@@ -286,12 +286,12 @@ public class SteamAppList
         return textVal;
     }
 
-    private static HashMap<String, SteamApp> cloneList(HashMap<String, SteamApp> list)
+    private static HashMap<String, App> cloneList(HashMap<String, App> list)
     {
-        HashMap<String, SteamApp> result = new HashMap<String, SteamApp>();
+        HashMap<String, App> result = new HashMap<String, App>();
         for (String key : list.keySet())
         {
-            SteamApp app = list.get(key);
+            App app = list.get(key);
             result.put(key, app.clone());
         }
         return result;

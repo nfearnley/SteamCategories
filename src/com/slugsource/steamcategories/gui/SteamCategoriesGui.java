@@ -4,7 +4,7 @@
  */
 package com.slugsource.steamcategories.gui;
 
-import com.slugsource.steamcategories.lib.SteamCategories;
+import com.slugsource.steamcategories.lib.Categories;
 import com.slugsource.vdf.lib.InvalidFileException;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 public class SteamCategoriesGui extends javax.swing.JFrame
 {
 
-    private SteamCategories cats;
+    private Categories cats;
     private File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
     private String steamId = "nfearnley";
 
@@ -135,7 +135,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void openFile()
     {
-        cats = new SteamCategories(file, steamId);
+        cats = new Categories(file, steamId);
         try
         {
             cats.readApps();

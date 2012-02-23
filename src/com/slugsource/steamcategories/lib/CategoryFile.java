@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Nathan Fearnley
  */
-public class SteamCategoryFile
+public class CategoryFile
 {
 
     private Node rootNode;
@@ -27,11 +27,11 @@ public class SteamCategoryFile
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
 
-    public SteamCategoryFile()
+    public CategoryFile()
     {
     }
 
-    public SteamCategoryFile(File file)
+    public CategoryFile(File file)
     {
         this.file = file;
     }

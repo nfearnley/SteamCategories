@@ -19,7 +19,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nathan Fearnley
  */
-public class SteamApp
+public class App
 {
 
     private String name;
@@ -27,7 +27,7 @@ public class SteamApp
     private String category;
 
     // TODO: Add javadocs
-    public SteamApp(String name, String appid)
+    public App(String name, String appid)
     {
         if (name == null)
         {
@@ -77,7 +77,7 @@ public class SteamApp
         {
             return false;
         }
-        final SteamApp other = (SteamApp) obj;
+        final App other = (App) obj;
         if (!Objects.equals(this.appid, other.appid))
         {
             return false;
@@ -93,9 +93,9 @@ public class SteamApp
         return hash;
     }
     
-    public SteamApp clone()
+    public App clone()
     {
-        SteamApp app = new SteamApp(name, appid);
+        App app = new App(name, appid);
         app.setCategory(category);
         return app;
     }

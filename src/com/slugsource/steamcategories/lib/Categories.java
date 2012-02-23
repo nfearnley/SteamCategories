@@ -13,13 +13,13 @@ import java.util.Set;
  *
  * @author c260683
  */
-public class SteamCategories
+public class Categories
 {
 
-    private SteamCategoryFile categoryFile = null;
-    private SteamAppList apps = null;
+    private CategoryFile categoryFile = null;
+    private AppList apps = null;
 
-    public SteamCategories()
+    public Categories()
     {
         this.categoryFile = null;
         this.apps = null;
@@ -31,7 +31,7 @@ public class SteamCategories
      * @param file File to load from
      * @param steamId Steam ID of user
      */
-    public SteamCategories(File file, String steamId)
+    public Categories(File file, String steamId)
     {
         if (file == null)
         {
@@ -42,8 +42,8 @@ public class SteamCategories
             throw new NullPointerException("SteamID cannot be null.");
         }
 
-        this.categoryFile = new SteamCategoryFile(file);
-        this.apps = new SteamAppList(steamId);
+        this.categoryFile = new CategoryFile(file);
+        this.apps = new AppList(steamId);
     }
 
     private void syncAppsToCategoryFile()
@@ -90,7 +90,7 @@ public class SteamCategories
             throw new NullPointerException("SteamID cannot be null.");
         }
 
-        SteamAppList apps = new SteamAppList(steamId);
+        AppList apps = new AppList(steamId);
         readApps();
 
     }
@@ -113,7 +113,7 @@ public class SteamCategories
 
     public void readCategories(File file) throws InvalidFileException, IOException
     {
-        categoryFile = new SteamCategoryFile(file);
+        categoryFile = new CategoryFile(file);
         readCategories();
     }
 
