@@ -22,7 +22,7 @@ public class SteamCategoryFile
     private File file;
     private final String[] appsPath =
     {
-        "Software", "Valve", "Steam", "apps"
+        "Software", "Valve", "Steam"
     };
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
