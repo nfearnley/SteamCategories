@@ -136,4 +136,14 @@ public class SteamCategories
         categoryFile.writeToFile();
         apps.syncOldApps();
     }
+
+    public int getAppSize()
+    {
+        return apps.getAppSize();
+    }
+    
+    public int getCategorySize()
+    {
+        return apps.getCategorySize();
+    }
 }

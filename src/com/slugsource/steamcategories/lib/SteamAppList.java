@@ -84,10 +84,20 @@ public class SteamAppList
     {
         return apps.keySet();
     }
-
+    
     public Set<String> getCategoryList()
     {
         return categories;
+    }
+
+    public int getAppSize()
+    {
+        return apps.size();
+    }
+    
+    public int getCategorySize()
+    {
+        return categories.size();
     }
 
     public String getCategory(String appId)
