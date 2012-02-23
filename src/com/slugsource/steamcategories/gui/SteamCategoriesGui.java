@@ -4,12 +4,22 @@
  */
 package com.slugsource.steamcategories.gui;
 
+import com.slugsource.steamcategories.lib.SteamCategories;
+import com.slugsource.vdf.lib.InvalidFileException;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Nathan Fearnley
  */
 public class SteamCategoriesGui extends javax.swing.JFrame
 {
+
+    private SteamCategories cats;
+    private File file = new File("F:\\Programming\\SteamCategories\\testoutput.vdf");
+    private String steamId = "nfearnley";
 
     /**
      * Creates new form SteamCategories
@@ -30,22 +40,26 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane3 = new javax.swing.JScrollPane();
-        gamesList = new javax.swing.JList();
+        appsList = new javax.swing.JList();
         jScrollPane4 = new javax.swing.JScrollPane();
         categoriesList = new javax.swing.JList();
         setCategoryButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
+        openMenuItem = new javax.swing.JCheckBoxMenuItem();
+        saveMenuItem = new javax.swing.JCheckBoxMenuItem();
+        closeMenuItem = new javax.swing.JCheckBoxMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        exitMenuItem = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        gamesList.setModel(new javax.swing.AbstractListModel() {
+        appsList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane3.setViewportView(gamesList);
+        jScrollPane3.setViewportView(appsList);
 
         jSplitPane1.setLeftComponent(jScrollPane3);
 
@@ -54,6 +68,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        categoriesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        categoriesList.setToolTipText("");
         jScrollPane4.setViewportView(categoriesList);
 
         jSplitPane1.setRightComponent(jScrollPane4);
@@ -61,10 +77,27 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         setCategoryButton.setText("Set Category");
 
         jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        openMenuItem.setText("Open");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(openMenuItem);
+
+        saveMenuItem.setText("Save");
+        jMenu1.add(saveMenuItem);
+
+        closeMenuItem.setText("Close");
+        closeMenuItem.setToolTipText("");
+        jMenu1.add(closeMenuItem);
+        jMenu1.add(jSeparator1);
+
+        exitMenuItem.setText("Exit");
+        jMenu1.add(exitMenuItem);
+
+        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -93,6 +126,30 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_openMenuItemActionPerformed
+    {//GEN-HEADEREND:event_openMenuItemActionPerformed
+
+        cats = new SteamCategories(file, steamId);
+        try
+        {
+            cats.readApps();
+        } catch (IOException ex)
+        {
+            JOptionPane.showMessageDialog(this, "Could not load apps.");
+            cats = null;
+            return;
+        }
+        try
+        {
+            cats.readCategories();
+        } catch (InvalidFileException | IOException ex)
+        {
+            JOptionPane.showMessageDialog(this, "Could not load categories.");
+            cats = null;
+            return;
+        }
+    }//GEN-LAST:event_openMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -146,14 +203,18 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList appsList;
     private javax.swing.JList categoriesList;
-    private javax.swing.JList gamesList;
+    private javax.swing.JCheckBoxMenuItem closeMenuItem;
+    private javax.swing.JCheckBoxMenuItem exitMenuItem;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JCheckBoxMenuItem openMenuItem;
+    private javax.swing.JCheckBoxMenuItem saveMenuItem;
     private javax.swing.JButton setCategoryButton;
     // End of variables declaration//GEN-END:variables
 }
