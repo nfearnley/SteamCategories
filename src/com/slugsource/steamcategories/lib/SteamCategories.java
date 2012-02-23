@@ -13,13 +13,13 @@ import java.util.Set;
  *
  * @author c260683
  */
-public class Categories
+public class SteamCategories
 {
 
     private CategoryFile categoryFile = null;
     private AppList apps = null;
 
-    public Categories()
+    public SteamCategories()
     {
         this.categoryFile = null;
         this.apps = null;
@@ -31,7 +31,7 @@ public class Categories
      * @param file File to load from
      * @param steamId Steam ID of user
      */
-    public Categories(File file, String steamId)
+    public SteamCategories(File file, String steamId)
     {
         if (file == null)
         {
