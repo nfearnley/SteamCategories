@@ -315,6 +315,10 @@ public class Node
                 break;
             }
         }
+        if (node != null)
+        {
+            node = node.getNode(name);
+        }
         return node;
 
     }

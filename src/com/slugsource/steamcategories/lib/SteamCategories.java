@@ -76,6 +76,12 @@ public class SteamCategories
     {
         return apps.getCategory(appId);
     }
+    
+    public String getName(String appId)
+    {
+        return apps.getName(appId);
+    }
+
 
     public void readApps(String steamId) throws IOException
     {
@@ -88,6 +94,12 @@ public class SteamCategories
         readApps();
 
     }
+
+    public void readApps() throws IOException
+    {
+        apps.readAppsFromSteamId();
+        syncCategoryFileToApps();
+    }
     
     public Set<String> getAppIdList()
     {
@@ -97,12 +109,6 @@ public class SteamCategories
     public Set<String> getCategoryList()
     {
         return apps.getCategoryList();
-    }
-
-    public void readApps() throws IOException
-    {
-        apps.readAppsFromSteamId();
-        syncCategoryFileToApps();
     }
 
     public void readCategories(File file) throws InvalidFileException, IOException

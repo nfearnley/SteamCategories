@@ -26,23 +26,22 @@ public class SteamCategoryFile
     };
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
-    
+
     public SteamCategoryFile()
     {
-        
     }
-    
+
     public SteamCategoryFile(File file)
     {
         this.file = file;
     }
-    
-    public void readFromFile(File file) throws InvalidFileException, IOException 
+
+    public void readFromFile(File file) throws InvalidFileException, IOException
     {
         this.file = file;
         readFromFile();
     }
-    
+
     public void readFromFile() throws InvalidFileException, IOException
     {
         if (file == null)
@@ -66,21 +65,30 @@ public class SteamCategoryFile
     /**
      * Gets the category of the given app
      *
-     * @param app The AppID of the steam app
+     * @param appId The AppID of the steam app
      * @return Category if set, null if not set
      */
-    public String getCategory(String app)
+    public String getCategory(String appId)
     {
-        if (app == null)
+        if (appId == null)
         {
             throw new NullPointerException("App cannot be null.");
         }
-
+        if (appsNode == null)
+        {
+            return null;
+        }
+        
         String[] path =
         {
-            app, "tags"
+            appId, "tags"
         };
-        String value = appsNode.getValue(path, "0");
+        String name = "0";
+        if (appId.equals("72850"))
+        {
+            System.out.println("Skyrim");
+        }
+        String value = appsNode.getValue(path, name);
         return value;
     }
 

@@ -8,6 +8,7 @@ import com.slugsource.steamcategories.lib.SteamCategories;
 import com.slugsource.vdf.lib.InvalidFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,7 +19,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 {
 
     private SteamCategories cats;
-    private File file = new File("F:\\Programming\\SteamCategories\\testoutput.vdf");
+    private File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
     private String steamId = "nfearnley";
 
     /**
@@ -45,12 +46,12 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         categoriesList = new javax.swing.JList();
         setCategoryButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JCheckBoxMenuItem();
-        saveMenuItem = new javax.swing.JCheckBoxMenuItem();
-        closeMenuItem = new javax.swing.JCheckBoxMenuItem();
+        fileMenu = new javax.swing.JMenu();
+        openMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        exitMenuItem = new javax.swing.JCheckBoxMenuItem();
+        quitMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,7 +77,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
         setCategoryButton.setText("Set Category");
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
         openMenuItem.setText("Open");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -84,20 +85,19 @@ public class SteamCategoriesGui extends javax.swing.JFrame
                 openMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(openMenuItem);
+        fileMenu.add(openMenuItem);
 
         saveMenuItem.setText("Save");
-        jMenu1.add(saveMenuItem);
+        fileMenu.add(saveMenuItem);
 
         closeMenuItem.setText("Close");
-        closeMenuItem.setToolTipText("");
-        jMenu1.add(closeMenuItem);
-        jMenu1.add(jSeparator1);
+        fileMenu.add(closeMenuItem);
+        fileMenu.add(jSeparator1);
 
-        exitMenuItem.setText("Exit");
-        jMenu1.add(exitMenuItem);
+        quitMenuItem.setText("Quit");
+        fileMenu.add(quitMenuItem);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(fileMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -129,7 +129,12 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_openMenuItemActionPerformed
     {//GEN-HEADEREND:event_openMenuItemActionPerformed
+        // TODO add your handling code here:
+        openFile();
+    }//GEN-LAST:event_openMenuItemActionPerformed
 
+    private void openFile()
+    {
         cats = new SteamCategories(file, steamId);
         try
         {
@@ -149,8 +154,12 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             cats = null;
             return;
         }
-    }//GEN-LAST:event_openMenuItemActionPerformed
-
+        Set<String> apps = cats.getAppIdList();
+        Set<String> categories = cats.getCategoryList();
+        appsList.setListData(apps.toArray());
+        categoriesList.setListData(categories.toArray());
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -205,16 +214,16 @@ public class SteamCategoriesGui extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList appsList;
     private javax.swing.JList categoriesList;
-    private javax.swing.JCheckBoxMenuItem closeMenuItem;
-    private javax.swing.JCheckBoxMenuItem exitMenuItem;
-    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JCheckBoxMenuItem openMenuItem;
-    private javax.swing.JCheckBoxMenuItem saveMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem quitMenuItem;
+    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JButton setCategoryButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,12 +4,12 @@
   <NonVisualComponents>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
-        <Menu class="javax.swing.JMenu" name="jMenu1">
+        <Menu class="javax.swing.JMenu" name="fileMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="File"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="openMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="openMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Open"/>
               </Properties>
@@ -17,22 +17,21 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="saveMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="saveMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Save"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="closeMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="closeMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Close"/>
-                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="exitMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="quitMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Exit"/>
+                <Property name="text" type="java.lang.String" value="Quit"/>
               </Properties>
             </MenuItem>
           </SubComponents>

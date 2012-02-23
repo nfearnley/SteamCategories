@@ -6,6 +6,7 @@ package com.slugsource.steamcategories.lib;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,16 +22,16 @@ import org.xml.sax.SAXException;
  */
 public class SteamAppList
 {
+
     private String steamId;
     private HashMap<String, SteamApp> apps;
     private HashMap<String, SteamApp> oldApps;
     private Set<String> categories;
-    
+
     public SteamAppList()
     {
-        
     }
-    
+
     public SteamAppList(String steamId)
     {
         this.steamId = steamId;
@@ -59,37 +60,36 @@ public class SteamAppList
         }
         return dirty;
     }
-    
+
     public boolean isDirty(String appId)
     {
         SteamApp app = apps.get(appId);
         SteamApp oldApp = oldApps.get(appId);
-        
+
         String category = app.getCategory();
         String oldCategory = oldApp.getCategory();
-        
+
         boolean result = false;
         if (category == null && oldCategory == null)
         {
             result = false;
-        }
-        else
+        } else
         {
             result = !category.equals(oldCategory);
         }
         return result;
     }
-    
+
     public Set<String> getAppIdList()
     {
         return apps.keySet();
     }
-    
+
     public Set<String> getCategoryList()
     {
         return categories;
     }
-    
+
     public String getCategory(String appId)
     {
         if (apps == null)
@@ -100,7 +100,7 @@ public class SteamAppList
         {
             throw new NullPointerException("AppId cannot be null.");
         }
-        
+
         SteamApp app = apps.get(appId);
         String category = null;
         if (app != null)
@@ -110,8 +110,25 @@ public class SteamAppList
 
         return category;
     }
-    
-    public boolean setCategory(String appId, String category)       
+
+    public String getName(String appId)
+    {
+        if (apps == null)
+        {
+            throw new IllegalStateException("apps must be loaded before getting an app category.");
+        }
+        if (appId == null)
+        {
+            throw new NullPointerException("AppId cannot be null.");
+        }
+
+        SteamApp app = apps.get(appId);
+        String name = app.getName();
+        
+        return name;
+    }
+
+    public boolean setCategory(String appId, String category)
     {
         if (apps == null)
         {
@@ -121,13 +138,17 @@ public class SteamAppList
         {
             throw new NullPointerException("AppId cannot be null.");
         }
-        
+
         boolean result = false;
         SteamApp app = apps.get(appId);
         if (app != null)
         {
             app.setCategory(category);
-            categories.add(category);
+
+            if (category != null)
+            {
+                categories.add(category);
+            }
             result = true;
         }
         return result;
@@ -138,7 +159,7 @@ public class SteamAppList
         this.steamId = steamId;
         readAppsFromSteamId();
     }
-    
+
     public void readAppsFromSteamId() throws IOException
     {
         if (steamId == null)
@@ -146,9 +167,10 @@ public class SteamAppList
             throw new IllegalStateException("SteamId must be set before calling readAppsFromSteamId().");
         }
         this.apps = getAppsFromSteamId(steamId);
+        categories = new HashSet<String>();
         syncOldApps();
     }
-    
+
     // TODO: Add javadocs
     private static HashMap<String, SteamApp> getAppsFromSteamId(String steamId) throws IOException
     {
@@ -166,35 +188,35 @@ public class SteamAppList
     private static HashMap<String, SteamApp> getAppsFromUrl(String url) throws IOException
     {
 
-        Element doc = null;
+        Element docElem = null;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        
-        Document appsXml;
-        
+
+        Document doc;
+
         try
         {
             DocumentBuilder db = dbf.newDocumentBuilder();
-            appsXml = db.parse(url);
+            doc = db.parse(url);
         } catch (ParserConfigurationException | SAXException ex)
         {
             throw new IOException(ex);
         }
 
-        doc = appsXml.getDocumentElement();
+        docElem = doc.getDocumentElement();
 
-        HashMap<String, SteamApp> apsList = getAppsFromXml(doc);
-        return apsList;
+        HashMap<String, SteamApp> appsList = getAppsFromXml(docElem);
+        return appsList;
     }
-    
+
     private static HashMap<String, SteamApp> getAppsFromXml(Element doc) throws IOException
     {
         HashMap<String, SteamApp> appsList = new HashMap<String, SteamApp>();
-        NodeList appsXml = doc.getElementsByTagName("game");
-        assert (appsXml != null);
+        NodeList nl = doc.getElementsByTagName("game");
+        assert (nl != null);
 
-        for (int x = 0; x < appsXml.getLength(); x++)
+        for (int x = 0; x < nl.getLength(); x++)
         {
-            SteamApp app = getAppFromXml(doc);
+            SteamApp app = getAppFromXml((Element) nl.item(x));
             appsList.put(app.getAppid(), app);
         }
 
@@ -253,18 +275,18 @@ public class SteamAppList
 
         return textVal;
     }
-    
+
     private static HashMap<String, SteamApp> cloneList(HashMap<String, SteamApp> list)
     {
         HashMap<String, SteamApp> result = new HashMap<String, SteamApp>();
-        for (String key: list.keySet())
+        for (String key : list.keySet())
         {
             SteamApp app = list.get(key);
             result.put(key, app.clone());
         }
         return result;
     }
-    
+
     public void syncOldApps()
     {
         oldApps = cloneList(apps);
