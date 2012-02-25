@@ -107,9 +107,19 @@ public class SteamCategories
         return apps.getAppIdList();
     }
     
+    public String getAppId(int index)
+    {
+        return apps.getAppId(index);
+    }
+    
     public List<String> getCategoryList()
     {
         return apps.getCategoryList();
+    }
+    
+    public String getCategory(int index)
+    {
+        return apps.getCategory(index);
     }
 
     public void readCategories(File file) throws InvalidFileException, IOException
