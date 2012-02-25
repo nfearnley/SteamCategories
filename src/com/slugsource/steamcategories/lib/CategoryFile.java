@@ -26,6 +26,7 @@ public class CategoryFile
     };
     private final String appsName = "apps";
     private final String rootName = "UserLocalConfigStore";
+    private final String altRootName = "UserRoamingConfigStore";
 
     public CategoryFile()
     {
@@ -50,7 +51,7 @@ public class CategoryFile
 
         }
         this.rootNode = Node.readFromFile(file);
-        if (!rootNode.getName().equals(rootName))
+        if (!(rootNode.getName().equals(rootName) || rootNode.getName().equals(altRootName)))
         {
             throw new InvalidFileException("This is not a valid shared config file.");
         }
