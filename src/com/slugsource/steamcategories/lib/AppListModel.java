@@ -34,7 +34,14 @@ public class AppListModel extends AbstractListModel<String>
     @Override
     public String getElementAt(int index)
     {
-        String element = apps.getName(index);
+        String appId = apps.getAppId(index);
+        String name = apps.getName(appId);
+        String category = apps.getCategory(appId);
+        String element = name;
+        if (category != null)
+        {
+            element += " (" + category + ")";
+        }
         return element;
     }
 }
