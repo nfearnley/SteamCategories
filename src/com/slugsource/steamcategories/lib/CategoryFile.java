@@ -84,10 +84,6 @@ public class CategoryFile
             appId, "tags"
         };
         String name = "0";
-        if (appId.equals("72850"))
-        {
-            System.out.println("Skyrim");
-        }
         String value = appsNode.getValue(path, name);
         return value;
     }
