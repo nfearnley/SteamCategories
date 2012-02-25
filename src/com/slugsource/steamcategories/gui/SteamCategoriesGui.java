@@ -6,12 +6,8 @@ package com.slugsource.steamcategories.gui;
 
 import com.slugsource.steamcategories.lib.SteamCategories;
 import com.slugsource.vdf.lib.InvalidFileException;
-import java.awt.FileDialog;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -196,7 +192,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             @Override
             public boolean accept(File f)
             {
-                return f.getName().equals(filename);
+                return f.getName().equals(filename) || f.isDirectory();
             }
 
             @Override
