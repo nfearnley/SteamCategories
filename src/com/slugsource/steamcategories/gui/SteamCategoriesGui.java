@@ -6,10 +6,13 @@ package com.slugsource.steamcategories.gui;
 
 import com.slugsource.steamcategories.lib.SteamCategories;
 import com.slugsource.vdf.lib.InvalidFileException;
+import java.awt.FileDialog;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
@@ -21,7 +24,6 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 {
 
     private SteamCategories cats;
-    private File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
 
     /**
      * Creates new form SteamCategories
@@ -150,6 +152,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void openFile()
     {
+        //String steamId = "nfearnley";
         String steamId = JOptionPane.showInputDialog(this, "Enter your Steam ID:");
         if (steamId == null)
         {
@@ -160,6 +163,33 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             return;
         }
 
+        // File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(getSteamDirectory());
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter()
+        {
+
+            String filename = "sharedconfig.vdf";
+
+            @Override
+            public boolean accept(File f)
+            {
+                return f.getName().equals(filename);
+            }
+
+            @Override
+            public String getDescription()
+            {
+                return filename;
+            }
+        });
+        int result = fileChooser.showOpenDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION)
+        {
+            return;
+        }
+        File file = fileChooser.getSelectedFile();
 
         cats = new SteamCategories(file, steamId);
         try
@@ -171,6 +201,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             cats = null;
             return;
         }
+
+
         try
         {
             cats.readCategories();
@@ -184,6 +216,52 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         ListModel catListModel = cats.getCategoryListModel();
         appsList.setModel(appListModel);
         categoriesList.setModel(catListModel);
+    }
+
+    private File getSteamDirectory()
+    {
+        File programFiles = new File(System.getenv("ProgramFiles"));
+        if (!programFiles.isDirectory())
+        {
+            return new File(".");
+        }
+
+        File steam = new File(programFiles, "Steam");
+        if (!steam.isDirectory())
+        {
+            return programFiles;
+        }
+
+        File userdata = new File(steam, "userdata");
+        if (!userdata.isDirectory())
+        {
+            return steam;
+        }
+
+        File[] userids = userdata.listFiles();
+        if (userids.length == 0)
+        {
+            return userdata;
+        }
+        File userid = userids[0];
+        if (!userid.isDirectory())
+        {
+            return userdata;
+        }
+
+        File seven = new File(userid, "7");
+        if (!seven.isDirectory())
+        {
+            return userid;
+        }
+
+        File remote = new File(seven, "remote");
+        if (!remote.isDirectory())
+        {
+            return seven;
+        }
+
+        return remote;
     }
 
     private void setCategoryButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_setCategoryButtonActionPerformed
