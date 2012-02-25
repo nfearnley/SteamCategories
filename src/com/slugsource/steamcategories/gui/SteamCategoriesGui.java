@@ -121,6 +121,11 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         fileMenu.add(jSeparator1);
 
         quitMenuItem.setText("Quit");
+        quitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quitMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(quitMenuItem);
 
         jMenuBar1.add(fileMenu);
@@ -378,6 +383,17 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         
         setCategory(category);
     }
+    
+    private void quitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_quitMenuItemActionPerformed
+    {//GEN-HEADEREND:event_quitMenuItemActionPerformed
+        quit();
+    }//GEN-LAST:event_quitMenuItemActionPerformed
+
+    private void quit()
+    {
+        System.exit(0);
+    }
+    
 
     /**
      * @param args the command line arguments
