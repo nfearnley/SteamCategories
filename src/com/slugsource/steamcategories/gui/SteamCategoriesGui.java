@@ -50,6 +50,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         categoriesList = new javax.swing.JList();
         setCategoryButton = new javax.swing.JButton();
         removeCategoryButton = new javax.swing.JButton();
+        setNewCategoryButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -82,6 +83,13 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         removeCategoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeCategoryButtonActionPerformed(evt);
+            }
+        });
+
+        setNewCategoryButton.setText("Set New Category");
+        setNewCategoryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setNewCategoryButtonActionPerformed(evt);
             }
         });
 
@@ -131,6 +139,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(removeCategoryButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(setNewCategoryButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(setCategoryButton)))
                 .addContainerGap())
         );
@@ -142,7 +152,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(setCategoryButton)
-                    .addComponent(removeCategoryButton))
+                    .addComponent(removeCategoryButton)
+                    .addComponent(setNewCategoryButton))
                 .addContainerGap())
         );
 
@@ -282,14 +293,23 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             return;
         }
 
+        int catIndex = categoriesList.getSelectedIndex();
+        String category = cats.getCategory(catIndex);
+
+        setCategory(category);
+    }
+    
+    private void setCategory(String category)
+    {
         for (int x : appsList.getSelectedIndices())
         {
             String appId = cats.getAppId(x);
-            int catIndex = categoriesList.getSelectedIndex();
-            String category = cats.getCategory(catIndex);
             cats.setCategory(appId, category);
         }
         appsList.repaint();
+        int index = categoriesList.getSelectedIndex();
+        categoriesList.setModel(cats.getCategoryListModel());
+        categoriesList.setSelectedIndex(index);
     }
 
     private void removeCategoryButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeCategoryButtonActionPerformed
@@ -337,6 +357,26 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         appsList.setModel(new DefaultListModel());
         categoriesList.setModel(new DefaultListModel());
         cats = null;
+    }
+    private void setNewCategoryButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_setNewCategoryButtonActionPerformed
+    {//GEN-HEADEREND:event_setNewCategoryButtonActionPerformed
+        setNewCategory();
+    }//GEN-LAST:event_setNewCategoryButtonActionPerformed
+
+    private void setNewCategory()
+    {
+        //String steamId = "nfearnley";
+        String category = JOptionPane.showInputDialog(this, "Enter category name:");
+        if (category == null)
+        {
+            return;
+        }
+        if (category.equals(""))
+        {
+            return;
+        }
+        
+        setCategory(category);
     }
 
     /**
@@ -390,6 +430,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             }
         });
     }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList appsList;
     private javax.swing.JList categoriesList;
@@ -405,5 +446,6 @@ public class SteamCategoriesGui extends javax.swing.JFrame
     private javax.swing.JButton removeCategoryButton;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JButton setCategoryButton;
+    private javax.swing.JButton setNewCategoryButton;
     // End of variables declaration//GEN-END:variables
 }

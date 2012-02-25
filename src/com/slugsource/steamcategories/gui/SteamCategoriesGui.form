@@ -75,6 +75,8 @@
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       <Component id="removeCategoryButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="setNewCategoryButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="setCategoryButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -91,6 +93,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="setCategoryButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="removeCategoryButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="setNewCategoryButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -156,6 +159,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeCategoryButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="setNewCategoryButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Set New Category"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="setNewCategoryButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
