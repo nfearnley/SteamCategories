@@ -22,7 +22,6 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private SteamCategories cats;
     private File file = new File("F:\\Programming\\SteamCategories\\sharedconfig.vdf");
-    private String steamId = "nfearnley";
 
     /**
      * Creates new form SteamCategories
@@ -151,6 +150,17 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void openFile()
     {
+        String steamId = JOptionPane.showInputDialog(this, "Enter your Steam ID:");
+        if (steamId == null)
+        {
+            return;
+        }
+        if (steamId.equals(""))
+        {
+            return;
+        }
+
+
         cats = new SteamCategories(file, steamId);
         try
         {
@@ -198,7 +208,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         }
         appsList.repaint();
     }
-    
+
     private void removeCategoryButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeCategoryButtonActionPerformed
     {//GEN-HEADEREND:event_removeCategoryButtonActionPerformed
         removeCategory();
@@ -213,7 +223,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         }
         appsList.repaint();
     }
-    
+
     private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveMenuItemActionPerformed
     {//GEN-HEADEREND:event_saveMenuItemActionPerformed
         saveFile();
@@ -229,7 +239,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             JOptionPane.showMessageDialog(this, "Could not save categories.");
         }
     }
-    
+
     /**
      * @param args the command line arguments
      */

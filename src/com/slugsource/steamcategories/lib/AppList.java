@@ -272,7 +272,12 @@ public class AppList
             throw new IOException(ex);
         }
 
-        docElem = doc.getDocumentElement();
+        NodeList gamesElems = doc.getElementsByTagName("games");
+        if (gamesElems.getLength() != 1)
+        {
+            throw new IOException("Could not load apps url.");
+        }
+        docElem = (Element)gamesElems.item(0);
 
         HashMap<String, App> appsList = getAppsFromXml(docElem);
         return appsList;
