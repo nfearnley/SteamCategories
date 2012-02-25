@@ -564,6 +564,10 @@ public class Node
         // Read node name
         parser.nextToken();
         String name = parser.sval;
+        if (name == null)
+        {
+            throw new InvalidFileException("This is not a vdf file.");
+        }
 
         parser.nextToken();
         // Check if next token is value or open of branch
