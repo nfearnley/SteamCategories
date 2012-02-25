@@ -12,6 +12,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
@@ -58,9 +59,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         quitMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 287));
 
-        jSplitPane1.setDividerLocation(350);
+        jSplitPane1.setDividerLocation(400);
 
         jScrollPane3.setViewportView(appsList);
 
@@ -104,6 +104,11 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         fileMenu.add(saveMenuItem);
 
         closeMenuItem.setText("Close");
+        closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(closeMenuItem);
         fileMenu.add(jSeparator1);
 
@@ -309,6 +314,10 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void saveFile()
     {
+        if (cats == null)
+        {
+            return;
+        }
         try
         {
             cats.writeCategories();
@@ -316,6 +325,18 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         {
             JOptionPane.showMessageDialog(this, "Could not save categories.");
         }
+    }
+
+    private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_closeMenuItemActionPerformed
+    {//GEN-HEADEREND:event_closeMenuItemActionPerformed
+        closeFile();
+    }//GEN-LAST:event_closeMenuItemActionPerformed
+
+    private void closeFile()
+    {
+        appsList.setModel(new DefaultListModel());
+        categoriesList.setModel(new DefaultListModel());
+        cats = null;
     }
 
     /**
