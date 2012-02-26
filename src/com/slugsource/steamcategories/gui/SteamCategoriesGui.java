@@ -169,6 +169,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void openFile()
     {
+        // TODO: Add save prompt
         //String steamId = "nfearnley";
         String steamId = JOptionPane.showInputDialog(this, "Enter your Steam ID:");
         if (steamId == null)
@@ -243,6 +244,8 @@ public class SteamCategoriesGui extends javax.swing.JFrame
             return new File(".");
         }
 
+        // TODO: Add registry access to find steam directory
+        // HKCU\Software\Valve\Steam\SteamPath
         File steam = new File(programFiles, "Steam");
         if (!steam.isDirectory())
         {
@@ -355,6 +358,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void closeFile()
     {
+        // TODO: Add save prompt
         appsList.setModel(new DefaultListModel());
         categoriesList.setModel(new DefaultListModel());
         cats = null;
@@ -387,6 +391,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
 
     private void quit()
     {
+        // TODO: Add save prompt
         System.exit(0);
     }
     
