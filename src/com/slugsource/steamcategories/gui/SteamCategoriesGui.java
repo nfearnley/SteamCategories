@@ -56,6 +56,7 @@ public class SteamCategoriesGui extends javax.swing.JFrame
         quitMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Steam Categories");
 
         jSplitPane1.setDividerLocation(400);
 
